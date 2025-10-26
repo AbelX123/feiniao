@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ✅ 父模块信息 -->
+    <groupId>com.ghml</groupId>
+    <artifactId>feiniao</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>feiniao</name>
+
+    <!-- ✅ Spring Boot 官方父依赖 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.7</version>
+        <relativePath/>
+    </parent>
+
+    <!-- ✅ 子模块 -->
+    <modules>
+        <module>feiniao-common</module>
+        <module>feiniao-dicts</module>
+        <module>feiniao-orders</module>
+        <module>feiniao-payments</module>
+        <module>feiniao-security</module>
+        <module>feiniao-users</module>
+    </modules>
+
+    <!-- ✅ 项目通用属性 -->
+    <properties>
+        <revision>1.0.0</revision>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <fastjson2.version>2.0.49</fastjson2.version>
+    </properties>
+
+    <!-- ✅ 仅声明子模块可能公用的依赖版本 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- MyBatis-Plus (通用ORM依赖) -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- FastJson2 (通用JSON解析) -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
