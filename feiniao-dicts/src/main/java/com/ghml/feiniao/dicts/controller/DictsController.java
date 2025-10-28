@@ -1,9 +1,16 @@
 package com.ghml.feiniao.dicts.controller;
 
+import com.ghml.feiniao.common.api.R;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author YUHUAI
+ * @version 1.0
+ * @date 2025-10-28 21:06
+ * @description
+ */
 @RestController
 @RequestMapping("/api/dicts")
 public class DictsController {
@@ -12,8 +19,8 @@ public class DictsController {
      * 获取模特类型列表
      */
     @GetMapping("/model-types")
-    public String getModelTypes() {
-        return "获取模特类型列表";
+    public R<Object> getModelTypes() {
+        return R.ok();
     }
 
     /**

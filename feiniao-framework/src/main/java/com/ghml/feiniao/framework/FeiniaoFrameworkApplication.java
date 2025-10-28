@@ -1,4 +1,4 @@
-package com.ghml.feiniao.dicts;
+package com.ghml.feiniao.framework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description
  */
 @SpringBootApplication
-public class FeiniaoDictsApplication {
+public class FeiniaoFrameworkApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FeiniaoDictsApplication.class, args);
+        SpringApplication.run(FeiniaoFrameworkApplication.class, args);
     }
 
 }

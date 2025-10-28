@@ -1,8 +1,20 @@
-package com.ghml.feiniao.common;
+package com.ghml.feiniao.common.api;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * @author YUHUAI
+ * @version 1.0
+ * @date 2025-10-28 21:06
+ * @description
+ */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class R<T> {
 
     private String code;
@@ -45,5 +57,10 @@ public class R<T> {
         r.setMsg(code.getMsg());
         r.setData(data);
         return r;
+    }
+
+    // 转换为json字符串
+    public String toJsonStr() {
+        return JSON.toJSONString(this, JSONWriter.Feature.IgnoreNonFieldGetter);
     }
 }
