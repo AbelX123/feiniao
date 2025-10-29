@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("model_type")
-public class ModeTypeEntity implements Serializable {
+public class ModelTypeEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

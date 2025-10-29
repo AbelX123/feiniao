@@ -4,49 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="登录，注册，分页查询创作者，token相关">
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/AgeRangeEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/CountryEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/ModeTypeEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/PlatformEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/SpecialtyEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/AgeRangeMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CountryMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/ModelTypeMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/PlatformMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/SpecialtyMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/AgeRangeVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/CountryVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/ModelTypeVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/PlatformVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/SpecialtyVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/AgeRangeController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/CountryController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/ModelTypeController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/PlatformController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/SpecialtyController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/AgeRangeService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/CountryService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IModelTypeService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IPlatformService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/SpecialtyService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/AgeRangeServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/CountryServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/ModelTypeServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/PlatformServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/SpecialtyServiceImpl.java" afterDir="false" />
+    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="字典模块">
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/constants/Gender.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/CreatorDetailVo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/BrandEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/BrandEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/CreatorEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/CreatorEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/FeiniaoDictsApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/FeiniaoDictsApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/DictsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/DictsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/resources/appliction.yml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-framework/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/InMybatisUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/InMybatisUserDetailsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyAuthenticationProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyAuthenticationProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/ModeTypeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/ModelTypeEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/ModelTypeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/ModelTypeMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/BrandVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/BrandVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IModelTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IModelTypeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/ModelTypeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/ModelTypeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,9 +26,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -85,31 +55,36 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;17&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/xuyuhuai/Workspace/feiniao/feiniao-framework/src/main/java/com/ghml/feiniao/framework/security&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;fileTemplates&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;03a62ab17b226b0c846cd288bb0ee280&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "17",
+    "last_opened_file_path": "/Users/xuyuhuai/Workspace/feiniao/feiniao-framework/src/main/java/com/ghml/feiniao/framework/security",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "fileTemplates",
+    "spring.configuration.checksum": "03a62ab17b226b0c846cd288bb0ee280",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -172,8 +147,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.FeiniaoDictsApplication" />
         <item itemvalue="Spring Boot.FeiniaoUsersApplication" />
+        <item itemvalue="Spring Boot.FeiniaoDictsApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -204,7 +179,7 @@
       <workItem from="1761645685526" duration="2681000" />
       <workItem from="1761656628871" duration="8245000" />
       <workItem from="1761702741868" duration="5002000" />
-      <workItem from="1761707792017" duration="1323000" />
+      <workItem from="1761707792017" duration="14759000" />
     </task>
     <task id="LOCAL-00001" summary="登录，注册，分页查询创作者，token相关">
       <created>1761659197254</created>
@@ -213,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1761659197254</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="字典模块">
+      <created>1761709592784</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1761709592784</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,7 +212,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/main" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -244,6 +226,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="登录，注册，分页查询创作者，token相关" />
-    <option name="LAST_COMMIT_MESSAGE" value="登录，注册，分页查询创作者，token相关" />
+    <MESSAGE value="字典模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="字典模块" />
   </component>
 </project>

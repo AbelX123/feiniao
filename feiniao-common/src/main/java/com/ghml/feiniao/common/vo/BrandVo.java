@@ -11,5 +11,5 @@ import lombok.Data;
 @Data
 public class BrandVo {
     private String access_token;
-    private String refresh_toke;
+    private String refresh_token;
 }

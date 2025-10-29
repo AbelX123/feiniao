@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
+import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 
 /**
@@ -14,4 +15,6 @@ import com.ghml.feiniao.common.vo.CreatorVo;
  */
 public interface CreatorService extends IService<CreatorEntity> {
     PageResult<CreatorVo> selectCreatorsByConditions(CreatorDto creatorDto);
+
+    CreatorDetailVo getCreatorById(String creatorId);
 }

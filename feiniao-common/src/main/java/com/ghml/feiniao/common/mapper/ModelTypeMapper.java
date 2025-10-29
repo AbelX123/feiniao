@@ -1,7 +1,7 @@
 package com.ghml.feiniao.common.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ghml.feiniao.common.entity.ModeTypeEntity;
+import com.ghml.feiniao.common.entity.ModelTypeEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -11,5 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @description
  */
 @Mapper
-public interface ModelTypeMapper extends BaseMapper<ModeTypeEntity> {
+public interface ModelTypeMapper extends BaseMapper<ModelTypeEntity> {
 }

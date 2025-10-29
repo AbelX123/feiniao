@@ -2,10 +2,16 @@ package com.ghml.feiniao.users.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
+import com.ghml.feiniao.common.exception.ServiceException;
+import com.ghml.feiniao.common.mapper.CountryMapper;
 import com.ghml.feiniao.common.mapper.CreatorMapper;
+import com.ghml.feiniao.common.mapper.ModelTypeMapper;
 import com.ghml.feiniao.common.utils.PageResult;
+import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import org.springframework.stereotype.Service;
@@ -13,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +32,15 @@ import java.util.stream.Collectors;
 public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity> implements CreatorService {
 
     private final CreatorMapper creatorMapper;
+    private final CountryMapper countryMapper;
+    private final ModelTypeMapper modelTypeMapper;
 
-    public CreatorServiceImpl(CreatorMapper creatorMapper) {
+    public CreatorServiceImpl(CreatorMapper creatorMapper,
+                              CountryMapper countryMapper,
+                              ModelTypeMapper modelTypeMapper) {
         this.creatorMapper = creatorMapper;
+        this.countryMapper = countryMapper;
+        this.modelTypeMapper = modelTypeMapper;
     }
 
     // 多条件分页查询创作者
@@ -49,6 +62,38 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .build();
     }
 
+    // 查询创作者详情
+    @Override
+    public CreatorDetailVo getCreatorById(String creatorId) {
+        Optional<CreatorEntity> opt = creatorMapper.getOptByCreatorId(creatorId);
+        if (opt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        CreatorEntity entity = opt.get();
+        // 查询模特类别
+        List<String> types = creatorMapper.getModelTypesById(creatorId);
+        // 查询平台
+        List<String> platforms = creatorMapper.getPlatforms(creatorId);
+        // 查询擅长品类
+        List<String> specialties = creatorMapper.getSpecialties(creatorId);
+        // 查询模特标签
+        List<String> tags = creatorMapper.getTags(creatorId);
+        // 查询案例
+        List<CreatorDetailVo.CaseVo> caseVos = creatorMapper.getCaseVos(creatorId);
+        // 构建vo
+        return CreatorDetailVo.builder()
+                .creatorId(creatorId)
+                .creatorName(entity.getUsername())
+                .countryName(entity.getCountryName())
+                .gender(Gender.getDescByCode(entity.getGender()))
+                .modelTypes(types)
+                .platforms(platforms)
+                .specialties(specialties)
+                .tags(tags)
+                .caseVos(caseVos)
+                .build();
+    }
+
     // 将Entity列表转换为VO列表
     private List<CreatorVo> convertToVoList(List<CreatorEntity> entities) {
         if (CollectionUtils.isEmpty(entities)) {
@@ -62,6 +107,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .countryCode(entity.getCountryCode())
                 .gender(entity.getGender())
                 .ageRange(entity.getAgeRange())
-                .countryName(entity.getCountryName()).build()).collect(Collectors.toList());
+                .countryName(entity.getCountryName()).build()
+        ).collect(Collectors.toList());
     }
 }

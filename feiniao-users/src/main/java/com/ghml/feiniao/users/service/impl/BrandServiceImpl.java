@@ -90,7 +90,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
 
         BrandVo vo = new BrandVo();
         vo.setAccess_token(newAccessToken);
-        vo.setRefresh_toke(newRefreshToken);
+        vo.setRefresh_token(newRefreshToken);
 
         return vo;
     }
@@ -112,7 +112,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
         String refreshToken = JwtUtils.generateRefreshToken(myUserDetails.getUserId());
         BrandVo vo = new BrandVo();
         vo.setAccess_token(accessToken);
-        vo.setRefresh_toke(refreshToken);
+        vo.setRefresh_token(refreshToken);
 
         // 缓存access_token, refresh_token
         redisService.setExpMillis(RedisPrefix.PREFIX_WEB_TOKEN + myUserDetails.getUserId(), accessToken, JwtUtils.getExpiration(accessToken));

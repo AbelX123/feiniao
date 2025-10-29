@@ -1,7 +1,7 @@
 package com.ghml.feiniao.dicts.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ghml.feiniao.common.entity.ModeTypeEntity;
+import com.ghml.feiniao.common.entity.ModelTypeEntity;
 import com.ghml.feiniao.common.vo.ModelTypeVo;
 
 import java.util.List;
@@ -12,6 +12,6 @@ import java.util.List;
  * @date 2025-10-28 23:23
  * @description
  */
-public interface IModelTypeService extends IService<ModeTypeEntity> {
+public interface IModelTypeService extends IService<ModelTypeEntity> {
     List<ModelTypeVo> getModelTypes();
 }
