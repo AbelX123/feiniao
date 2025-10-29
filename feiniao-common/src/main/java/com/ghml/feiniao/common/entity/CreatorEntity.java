@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @author YUHUAI
  * @version 1.0
  * @date 2025-10-28 21:06
- * @description
+ * @description 创作者
  */
 @Data
 @TableName("creator_user")

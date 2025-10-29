@@ -1,7 +1,9 @@
 package com.ghml.feiniao.dicts;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @author YUHUAI
@@ -10,6 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description
  */
 @SpringBootApplication
+@MapperScan("com.ghml.feiniao.common.mapper")
+@ComponentScan(basePackages = {"com.ghml.feiniao"})
 public class FeiniaoDictsApplication {
 
     public static void main(String[] args) {

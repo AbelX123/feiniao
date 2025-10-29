@@ -23,10 +23,36 @@
             <groupId>com.ghml</groupId>
             <artifactId>feiniao-common</artifactId>
         </dependency>
+        <!-- 框架能力 -->
+        <dependency>
+            <groupId>com.ghml</groupId>
+            <artifactId>feiniao-framework</artifactId>
+        </dependency>
+        <!-- 资源访问安全 -->
+        <dependency>
+            <groupId>com.ghml</groupId>
+            <artifactId>feiniao-security</artifactId>
+        </dependency>
         <!-- spring-boot-starter-web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- MyBatis-Plus (通用ORM依赖) -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis-spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <!-- lombok插件 -->
         <dependency>

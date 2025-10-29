@@ -58,11 +58,13 @@ public class SecurityConfig {
         http.exceptionHandling((exceptions) -> exceptions
                 // 未认证（没有登录）的处理
                 .authenticationEntryPoint((request, response, authException) -> {
+                    log.warn("未认证异常:{}", authException.getMessage());
                     R<Object> r = R.failed(Code._401);
                     RespUtils.response(response, r.toJsonStr());
                 })
                 // 已认证但无权限访问的处理
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    log.warn("无权访问:{}", accessDeniedException.getMessage());
                     R<Object> r = R.failed(Code._403);
                     RespUtils.response(response, r.toJsonStr());
                 }));

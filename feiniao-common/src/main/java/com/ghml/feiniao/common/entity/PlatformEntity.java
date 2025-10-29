@@ -10,23 +10,19 @@ import java.io.Serializable;
 /**
  * @author YUHUAI
  * @version 1.0
- * @date 2025-10-28 21:06
- * @description 产品主
+ * @date 2025-10-28 23:10
+ * @description 平台
  */
 @Data
-@TableName("brand_user")
-public class BrandEntity implements Serializable {
+@TableName("platform")
+public class PlatformEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // 用户编号
-    @TableId("user_id")
-    private String userId;
+    @TableId("platform_code")
+    private String platformCode;
 
-    // 用户名称
-    private String username;
+    private String platformName;
 
-    // 用户密码
-    private String password;
 }
