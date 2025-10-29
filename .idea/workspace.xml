@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="字典模块">
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/constants/Gender.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/CreatorDetailVo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/ModeTypeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/ModelTypeEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/ModelTypeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/ModelTypeMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/BrandVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/BrandVo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IModelTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/IModelTypeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/ModelTypeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/ModelTypeServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" afterDir="false" />
+    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="获取创作者详情信息">
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/TagEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/TagMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/TagVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/controller/TagController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/TagService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-dicts/src/main/java/com/ghml/feiniao/dicts/service/impl/TagServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,9 +20,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
-        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -147,8 +141,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.FeiniaoUsersApplication" />
         <item itemvalue="Spring Boot.FeiniaoDictsApplication" />
+        <item itemvalue="Spring Boot.FeiniaoUsersApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -179,7 +173,7 @@
       <workItem from="1761645685526" duration="2681000" />
       <workItem from="1761656628871" duration="8245000" />
       <workItem from="1761702741868" duration="5002000" />
-      <workItem from="1761707792017" duration="14759000" />
+      <workItem from="1761707792017" duration="15770000" />
     </task>
     <task id="LOCAL-00001" summary="登录，注册，分页查询创作者，token相关">
       <created>1761659197254</created>
@@ -195,7 +189,14 @@
       <option name="project" value="LOCAL" />
       <updated>1761709592784</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="获取创作者详情信息">
+      <created>1761748804992</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1761748804992</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -227,6 +228,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="登录，注册，分页查询创作者，token相关" />
     <MESSAGE value="字典模块" />
-    <option name="LAST_COMMIT_MESSAGE" value="字典模块" />
+    <MESSAGE value="获取创作者详情信息" />
+    <option name="LAST_COMMIT_MESSAGE" value="获取创作者详情信息" />
   </component>
 </project>
