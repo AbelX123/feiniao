@@ -4,6 +4,7 @@ import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.constants.HttpHeaders;
 import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.exception.ServiceException;
+import com.ghml.feiniao.common.vo.BrandDetailVo;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.users.service.IBrandService;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,17 @@ public class BrandController {
         }
         try {
             BrandVo vo = brandService.refreshToken(refreshToken);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取产品主信息
+    @GetMapping("/{brandId}")
+    public R<BrandDetailVo> getBrandById(@PathVariable("brandId") String brandId) {
+        try {
+            BrandDetailVo vo = brandService.getBrandById(brandId);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

@@ -3,12 +3,14 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.MemberLevel;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.BrandMapper;
 import com.ghml.feiniao.common.utils.JwtUtils;
+import com.ghml.feiniao.common.vo.BrandDetailVo;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.framework.service.RedisService;
 import com.ghml.feiniao.security.config.MyUserDetails;
@@ -22,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -93,6 +96,23 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
         vo.setRefresh_token(newRefreshToken);
 
         return vo;
+    }
+
+    // 根据编号查询产品主信息
+    @Override
+    public BrandDetailVo getBrandById(String brandId) {
+        Optional<BrandEntity> opt = this.getOptById(brandId);
+        if (opt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        BrandEntity entity = opt.get();
+        return BrandDetailVo.builder()
+                .userId(brandId)
+                .username(entity.getUsername())
+                .phone(entity.getPhone())
+                .avatar(entity.getAvatar())
+                .memberLeve(MemberLevel.getNameByCode(entity.getMemberLevel()))
+                .build();
     }
 
     // 登录业务

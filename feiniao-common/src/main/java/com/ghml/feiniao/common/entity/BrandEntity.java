@@ -29,4 +29,13 @@ public class BrandEntity implements Serializable {
 
     // 用户密码
     private String password;
+
+    // 手机号
+    private String phone;
+
+    // 头像地址
+    private String avatar;
+
+    // 用户等级
+    private Integer memberLevel;
 }
