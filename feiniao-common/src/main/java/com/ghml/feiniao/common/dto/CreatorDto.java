@@ -1,6 +1,8 @@
 package com.ghml.feiniao.common.dto;
 
+import com.ghml.feiniao.common.api.PageParam;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -10,12 +12,9 @@ import java.util.List;
  * @date 2025-10-28 21:06
  * @description
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class CreatorDto {
-
-    // 分页参数
-    private Integer pageNum = 1;
-    private Integer pageSize = 10;
+public class CreatorDto extends PageParam {
 
     // 筛选条件
     private List<String> platformCodes; // 平台编码

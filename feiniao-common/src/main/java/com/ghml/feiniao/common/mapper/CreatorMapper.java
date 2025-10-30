@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +71,33 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
     List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
 
     // 收藏创作者
-    @Insert("insert into brand_creator_mapping(brand_id, creator_id) " +
-            "values (#{brandId}, #{creatorId})")
-    void saveCreator(String brandId, String creatorId);
+    @Insert("INSERT INTO brand_creator_mapping(brand_id, creator_id) " +
+            "VALUES (#{brandId}, #{creatorId})")
+    void saveBrandCreator(String brandId, String creatorId);
+
+
+    // 取消收藏创作者
+    @Delete("DELETE " +
+            "FROM brand_creator_mapping " +
+            "WHERE brand_id = #{brandId} " +
+            "  and creator_id = #{creatorId}")
+    void deleteBrandCreator(String brandId, String creatorId);
+
+    // 根据产品主编号获取收藏的创作者列表
+    @Select("SELECT bcm.brand_id, cu.username, cu.video_price, c.country_name, cu.gender, ar.age_range_desc " +
+            "FROM brand_creator_mapping bcm " +
+            "         INNER JOIN creator_user cu ON bcm.creator_id = cu.user_id " +
+            "         LEFT JOIN country c ON c.country_code = cu.country_code " +
+            "         LEFT JOIN age_range ar ON ar.age_range = cu.age_range " +
+            "WHERE bcm.brand_id = #{brandId} " +
+            "ORDER BY bcm.brand_id")
+    Page<CreatorEntity> favoriteCreators(Page<CreatorEntity> page, String brandId);
+
+    // 收藏存在关系判定
+    @Select("SELECT COUNT(1) > 0 " +
+            "FROM brand_creator_mapping " +
+            "WHERE brand_id = #{brandId} " +
+            "  AND creator_id = #{creatorId}")
+    boolean existsFavoriteRelation(String brandId, String creatorId);
+
 }

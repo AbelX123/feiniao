@@ -9,11 +9,12 @@
         cu.gender,
         cu.video_price,
         cu.country_code,
-        cu.age_range,
+        ar.age_range_desc,
         c.country_name
         FROM creator_user cu
         INNER JOIN creator_platform_mapping cpm ON cu.user_id = cpm.creator_id
         INNER JOIN country c ON cu.country_code = c.country_code
+        INNER JOIN age_range ar ON ar.age_range = cu.age_range
         INNER JOIN creator_type_mapping ctm ON cu.user_id = ctm.creator_id
         INNER JOIN creator_tag_mapping m ON cu.user_id = m.creator_id
         INNER JOIN creator_specialty_mapping csm ON cu.user_id = csm.creator_id

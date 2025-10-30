@@ -19,4 +19,8 @@ public interface CreatorService extends IService<CreatorEntity> {
     CreatorDetailVo getCreatorById(String creatorId);
 
     void followCreator(String creatorId);
+
+    void unfollowCreator(String creatorId);
+
+    PageResult<CreatorVo> favoriteCreators(CreatorDto creatorDto);
 }

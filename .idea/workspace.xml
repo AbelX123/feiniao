@@ -4,17 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="根据编号获取产品主信息">
-      <change afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/utils/SecurityUtils.java" afterDir="false" />
+    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="分页获取产品主收藏的创作者列表">
+      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/PageParam.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/dto/CreatorDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/dto/CreatorDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/CreatorEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/CreatorEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/CreatorVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/CreatorVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/resources/mapper/CreatorMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/resources/mapper/CreatorMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-dicts/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +36,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -177,7 +182,7 @@
       <workItem from="1761645685526" duration="2681000" />
       <workItem from="1761656628871" duration="8245000" />
       <workItem from="1761702741868" duration="5002000" />
-      <workItem from="1761707792017" duration="22031000" />
+      <workItem from="1761707792017" duration="31812000" />
     </task>
     <task id="LOCAL-00001" summary="登录，注册，分页查询创作者，token相关">
       <created>1761659197254</created>
@@ -214,7 +219,21 @@
       <option name="project" value="LOCAL" />
       <updated>1761793459661</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="收藏创作者">
+      <created>1761797298883</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1761797298883</updated>
+    </task>
+    <task id="LOCAL-00007" summary="分页获取产品主收藏的创作者列表">
+      <created>1761807380114</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1761807380114</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,7 +250,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/main" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -249,6 +268,8 @@
     <MESSAGE value="获取创作者详情信息" />
     <MESSAGE value="获取标签列表" />
     <MESSAGE value="根据编号获取产品主信息" />
-    <option name="LAST_COMMIT_MESSAGE" value="根据编号获取产品主信息" />
+    <MESSAGE value="收藏创作者" />
+    <MESSAGE value="分页获取产品主收藏的创作者列表" />
+    <option name="LAST_COMMIT_MESSAGE" value="分页获取产品主收藏的创作者列表" />
   </component>
 </project>

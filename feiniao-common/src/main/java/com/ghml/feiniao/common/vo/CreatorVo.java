@@ -23,7 +23,7 @@ public class CreatorVo {
     private String password; // 用户密码
     private BigDecimal videoPrice; // 视频报价
     private String countryCode; // 国家代码
-    private Integer gender; // 性别
+    private String gender; // 性别
     private String ageRange; // 年龄范围
-    private String countryName; // 关联的country_name
+    private String countryName; // 关联的国家名
 }

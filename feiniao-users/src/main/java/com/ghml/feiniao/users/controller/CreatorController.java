@@ -53,4 +53,22 @@ public class CreatorController {
             return R.failed(e.getCode());
         }
     }
+
+    // 取消收藏创作者
+    @DeleteMapping("/{creatorId}/favorites")
+    public R<?> unFollowCreator(@PathVariable("creatorId") String creatorId) {
+        try {
+            creatorService.unfollowCreator(creatorId);
+            return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 通过产品主编号分页获取收藏的创作者
+    @GetMapping("/favorite-creators")
+    public R<PageResult<CreatorVo>> favoriteCreators(@RequestBody CreatorDto creatorDto) {
+        PageResult<CreatorVo> vos = creatorService.favoriteCreators(creatorDto);
+        return R.ok(vos);
+    }
 }

@@ -89,6 +89,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .build();
     }
 
+    // 收藏创作者
     @Override
     public void followCreator(String creatorId) {
         // 查询产品主编号
@@ -101,12 +102,72 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         if (opt.isEmpty()) {
             throw new ServiceException(Code.USER_NOT_EXIST);
         }
+        // 重复收藏，幂等处理，静默成功
+        boolean isExist = creatorMapper.existsFavoriteRelation(brandIdOpt.get(), creatorId);
+        if (isExist) {
+            return;
+        }
         try {
-            creatorMapper.saveCreator(brandIdOpt.get(), creatorId);
+            creatorMapper.saveBrandCreator(brandIdOpt.get(), creatorId);
         } catch (Exception e) {
             log.error("收藏创作者数据库操作错误:{}", e.getMessage());
             throw new ServiceException(Code.OPERATION_FAILED);
         }
+    }
+
+    // 取消收藏创作者
+    @Override
+    public void unfollowCreator(String creatorId) {
+        // 查询产品主编号
+        Optional<String> brandIdOpt = SecurityUtils.getCurrentUserIdOptional();
+        if (brandIdOpt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        // 检查creatorId存在
+        Optional<CreatorEntity> opt = this.getOptById(creatorId);
+        if (opt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        // 重复取消，幂等处理，静默成功
+        boolean isExist = creatorMapper.existsFavoriteRelation(brandIdOpt.get(), creatorId);
+        if (!isExist) {
+            return;
+        }
+        try {
+            creatorMapper.deleteBrandCreator(brandIdOpt.get(), creatorId);
+        } catch (Exception e) {
+            log.error("取消创作者数据库操作错误:{}", e.getMessage());
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+    }
+
+    // 通过产品主编号分页获取收藏的创作者
+    @Override
+    public PageResult<CreatorVo> favoriteCreators(CreatorDto dto) {
+        // 获取产品主编号
+        String brandId = SecurityUtils.getCurrentUserId();
+        // 创建分页对象
+        Page<CreatorEntity> page = Page.of(dto.getPageNum(), dto.getPageSize());
+        // 执行查询
+        Page<CreatorEntity> result = creatorMapper.favoriteCreators(page, brandId);
+        // 转换每个entity为vo
+        List<CreatorVo> vos = result.getRecords().stream()
+                .map(entity -> CreatorVo.builder()
+                        .userId(entity.getUserId())
+                        .username(entity.getUsername())
+                        .videoPrice(entity.getVideoPrice())
+                        .countryName(entity.getCountryName())
+                        .gender(Gender.getDescByCode(entity.getGender()))
+                        .ageRange(entity.getAgeRangeDesc())
+                        .build()).toList();
+        // 构建返回结果
+        return PageResult.<CreatorVo>builder()
+                .records(vos)
+                .total(result.getTotal())
+                .current(result.getCurrent())
+                .size(result.getSize())
+                .pages(result.getPages())
+                .build();
     }
 
     // 将Entity列表转换为VO列表
@@ -120,9 +181,10 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .username(entity.getUsername())
                 .videoPrice(entity.getVideoPrice())
                 .countryCode(entity.getCountryCode())
-                .gender(entity.getGender())
+                .gender(Gender.getDescByCode(entity.getGender()))
                 .ageRange(entity.getAgeRange())
-                .countryName(entity.getCountryName()).build()
+                .countryName(entity.getCountryName())
+                .build()
         ).collect(Collectors.toList());
     }
 }
