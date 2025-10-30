@@ -35,6 +35,10 @@ public class MyUserDetails implements UserDetails {
         return authorities;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     @Override
     public String getPassword() {
         return this.password;

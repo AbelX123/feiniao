@@ -42,4 +42,15 @@ public class CreatorController {
         CreatorDetailVo vo = creatorService.getCreatorById(creatorId);
         return R.ok(vo);
     }
+
+    // 收藏创作者
+    @PostMapping("/{creatorId}/favorites")
+    public R<?> followCreator(@PathVariable("creatorId") String creatorId) {
+        try {
+            creatorService.followCreator(creatorId);
+            return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
 }

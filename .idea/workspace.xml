@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="获取标签列表">
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/constants/MemberLevel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/vo/BrandDetailVo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/constants/Gender.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/constants/Gender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/BrandEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/entity/BrandEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/BrandController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/IBrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/IBrandService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/BrandServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/BrandServiceImpl.java" afterDir="false" />
+    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="根据编号获取产品主信息">
+      <change afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/utils/SecurityUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/mapper/CreatorMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/MyUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/CreatorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/CreatorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/CreatorServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +25,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -174,7 +177,7 @@
       <workItem from="1761645685526" duration="2681000" />
       <workItem from="1761656628871" duration="8245000" />
       <workItem from="1761702741868" duration="5002000" />
-      <workItem from="1761707792017" duration="18231000" />
+      <workItem from="1761707792017" duration="22031000" />
     </task>
     <task id="LOCAL-00001" summary="登录，注册，分页查询创作者，token相关">
       <created>1761659197254</created>
@@ -204,7 +207,14 @@
       <option name="project" value="LOCAL" />
       <updated>1761749707174</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="根据编号获取产品主信息">
+      <created>1761793459661</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1761793459661</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,6 +248,7 @@
     <MESSAGE value="字典模块" />
     <MESSAGE value="获取创作者详情信息" />
     <MESSAGE value="获取标签列表" />
-    <option name="LAST_COMMIT_MESSAGE" value="获取标签列表" />
+    <MESSAGE value="根据编号获取产品主信息" />
+    <option name="LAST_COMMIT_MESSAGE" value="根据编号获取产品主信息" />
   </component>
 </project>

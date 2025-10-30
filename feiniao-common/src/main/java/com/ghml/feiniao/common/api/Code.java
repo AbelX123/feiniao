@@ -2,6 +2,7 @@ package com.ghml.feiniao.common.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 /**
  * @author YUHUAI
  * @version 1.0
@@ -12,8 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Code {
     SUCCESS("0000", "成功"),
-
-    FAILED("9999", "系统错误"),
 
     _404("404", "访问错误的资源"),
 
@@ -32,7 +31,11 @@ public enum Code {
 
     TOKEN_EXPIRED("1003", "令牌已过期"),
 
-    TOKEN_INVALID("1004", "令牌无效");
+    TOKEN_INVALID("1004", "令牌无效"),
+
+    // 模糊错误
+    FAILED("9999", "系统错误"),
+    OPERATION_FAILED("9001", "操作失败，请稍后重试");
 
     private final String code;
     private final String msg;

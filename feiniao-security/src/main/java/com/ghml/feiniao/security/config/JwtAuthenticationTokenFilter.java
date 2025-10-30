@@ -75,7 +75,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         // 封装Authentication对象
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, Collections.emptySet());
+        MyUserDetails details = new MyUserDetails();
+        details.setUserId(userId);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(details, null, Collections.emptySet());
         // 将Authentication存入spring security上下文
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // 链式调用

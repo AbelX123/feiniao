@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -71,4 +72,9 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
             "WHERE creator_id = #{creatorId} " +
             "  AND status = 1")
     List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
+
+    // 收藏创作者
+    @Insert("insert into brand_creator_mapping(brand_id, creator_id) " +
+            "values (#{brandId}, #{creatorId})")
+    void saveCreator(String brandId, String creatorId);
 }

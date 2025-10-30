@@ -7,13 +7,13 @@ import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
-import com.ghml.feiniao.common.mapper.CountryMapper;
 import com.ghml.feiniao.common.mapper.CreatorMapper;
-import com.ghml.feiniao.common.mapper.ModelTypeMapper;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
+import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.CreatorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -28,19 +28,14 @@ import java.util.stream.Collectors;
  * @date 2025-10-28 21:06
  * @description
  */
+@Slf4j
 @Service
 public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity> implements CreatorService {
 
     private final CreatorMapper creatorMapper;
-    private final CountryMapper countryMapper;
-    private final ModelTypeMapper modelTypeMapper;
 
-    public CreatorServiceImpl(CreatorMapper creatorMapper,
-                              CountryMapper countryMapper,
-                              ModelTypeMapper modelTypeMapper) {
+    public CreatorServiceImpl(CreatorMapper creatorMapper) {
         this.creatorMapper = creatorMapper;
-        this.countryMapper = countryMapper;
-        this.modelTypeMapper = modelTypeMapper;
     }
 
     // 多条件分页查询创作者
@@ -92,6 +87,26 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .tags(tags)
                 .caseVos(caseVos)
                 .build();
+    }
+
+    @Override
+    public void followCreator(String creatorId) {
+        // 查询产品主编号
+        Optional<String> brandIdOpt = SecurityUtils.getCurrentUserIdOptional();
+        if (brandIdOpt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        // 检查creatorId存在
+        Optional<CreatorEntity> opt = this.getOptById(creatorId);
+        if (opt.isEmpty()) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        try {
+            creatorMapper.saveCreator(brandIdOpt.get(), creatorId);
+        } catch (Exception e) {
+            log.error("收藏创作者数据库操作错误:{}", e.getMessage());
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
     }
 
     // 将Entity列表转换为VO列表

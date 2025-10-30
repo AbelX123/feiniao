@@ -17,4 +17,6 @@ public interface CreatorService extends IService<CreatorEntity> {
     PageResult<CreatorVo> selectCreatorsByConditions(CreatorDto creatorDto);
 
     CreatorDetailVo getCreatorById(String creatorId);
+
+    void followCreator(String creatorId);
 }
