@@ -30,7 +30,6 @@
         <module>feiniao-payments</module>
         <module>feiniao-security</module>
         <module>feiniao-users</module>
-        <module>feiniao-framework</module>
     </modules>
 
     <!-- ✅ 项目通用属性 -->
@@ -62,11 +61,6 @@
             <dependency>
                 <groupId>com.ghml</groupId>
                 <artifactId>feiniao-users</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ghml</groupId>
-                <artifactId>feiniao-framework</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>

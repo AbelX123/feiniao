@@ -1,5 +1,5 @@
 
-package com.ghml.feiniao.framework.config;
+package com.ghml.feiniao.common.config;
 
 import com.alibaba.fastjson2.support.spring.data.redis.FastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;

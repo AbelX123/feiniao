@@ -1,4 +1,4 @@
-package com.ghml.feiniao.framework.service;
+package com.ghml.feiniao.common.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;

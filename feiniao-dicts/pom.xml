@@ -23,11 +23,6 @@
             <groupId>com.ghml</groupId>
             <artifactId>feiniao-common</artifactId>
         </dependency>
-        <!-- 框架能力 -->
-        <dependency>
-            <groupId>com.ghml</groupId>
-            <artifactId>feiniao-framework</artifactId>
-        </dependency>
         <!-- 资源访问安全 -->
         <dependency>
             <groupId>com.ghml</groupId>

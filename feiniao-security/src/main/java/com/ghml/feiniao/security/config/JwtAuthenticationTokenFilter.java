@@ -3,7 +3,7 @@ package com.ghml.feiniao.security.config;
 import com.ghml.feiniao.common.constants.HttpHeaders;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.utils.JwtUtils;
-import com.ghml.feiniao.framework.service.RedisService;
+import com.ghml.feiniao.common.service.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

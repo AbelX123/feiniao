@@ -12,7 +12,7 @@ import com.ghml.feiniao.common.mapper.BrandMapper;
 import com.ghml.feiniao.common.utils.JwtUtils;
 import com.ghml.feiniao.common.vo.BrandDetailVo;
 import com.ghml.feiniao.common.vo.BrandVo;
-import com.ghml.feiniao.framework.service.RedisService;
+import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.security.config.MyUserDetails;
 import com.ghml.feiniao.users.service.IBrandService;
 import io.jsonwebtoken.Claims;

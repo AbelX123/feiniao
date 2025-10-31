@@ -23,11 +23,6 @@
             <groupId>com.ghml</groupId>
             <artifactId>feiniao-common</artifactId>
         </dependency>
-        <!-- 框架能力 -->
-        <dependency>
-            <groupId>com.ghml</groupId>
-            <artifactId>feiniao-framework</artifactId>
-        </dependency>
         <!-- 引入安全模块 -->
         <dependency>
             <groupId>com.ghml</groupId>
@@ -59,7 +54,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.ghml.feiniao.dicts.FeiniaoDictsApplication</mainClass>
+                    <mainClass>com.ghml.feiniao.users.FeiniaoUsersApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
             </plugin>
