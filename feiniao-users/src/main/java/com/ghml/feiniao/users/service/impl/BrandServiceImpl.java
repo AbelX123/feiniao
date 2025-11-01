@@ -9,13 +9,17 @@ import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.BrandMapper;
+import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.utils.JwtUtils;
 import com.ghml.feiniao.common.vo.BrandDetailVo;
 import com.ghml.feiniao.common.vo.BrandVo;
-import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.security.config.MyUserDetails;
+import com.ghml.feiniao.security.utils.SecurityUtils;
+import com.ghml.feiniao.users.config.MinIOConfig;
 import com.ghml.feiniao.users.service.IBrandService;
+import com.ghml.feiniao.users.utils.MinIOUtils;
 import io.jsonwebtoken.Claims;
+import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -40,13 +45,19 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
+    private final MinioClient minioClient;
+    private final MinIOConfig minIOConfig;
 
     public BrandServiceImpl(PasswordEncoder passwordEncoder,
                             AuthenticationManager authenticationManager,
-                            RedisService redisService) {
+                            RedisService redisService,
+                            MinioClient minioClient,
+                            MinIOConfig minIOConfig) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.redisService = redisService;
+        this.minioClient = minioClient;
+        this.minIOConfig = minIOConfig;
     }
 
 
@@ -100,19 +111,48 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
 
     // 根据编号查询产品主信息
     @Override
-    public BrandDetailVo getBrandById(String brandId) {
-        Optional<BrandEntity> opt = this.getOptById(brandId);
+    public BrandDetailVo getBrandById() {
+        Optional<BrandEntity> opt = this.getOptById(SecurityUtils.getCurrentUserId());
         if (opt.isEmpty()) {
             throw new ServiceException(Code.USER_NOT_EXIST);
         }
         BrandEntity entity = opt.get();
         return BrandDetailVo.builder()
-                .userId(brandId)
+                .userId(SecurityUtils.getCurrentUserId())
                 .username(entity.getUsername())
                 .phone(entity.getPhone())
                 .avatar(entity.getAvatar())
                 .memberLeve(MemberLevel.getNameByCode(entity.getMemberLevel()))
                 .build();
+    }
+
+    // 上传头像到OSS
+    @Override
+    public String uploadAvatar(MultipartFile file) {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        String filename = currentUserId + "." + StringUtils.substringAfter(file.getOriginalFilename(), ".");
+        try {
+            return MinIOUtils.uploadFile(minioClient, minIOConfig, file, filename);
+        } catch (Exception e) {
+            log.error("OSS文件上传失败:{}", e.getMessage());
+            throw new ServiceException(Code.OSS_ERROR);
+        }
+    }
+
+    // 获取头像外链
+    @Override
+    public String getAvatarUrl(String filename) {
+        // 校验filename和用户是否一致
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        if (!StringUtils.startsWith(filename, currentUserId)) {
+            throw new ServiceException(Code.OSS_NOT_EXIST);
+        }
+        try {
+            return MinIOUtils.getObjectUrl(minioClient, minIOConfig, filename, 30);
+        } catch (Exception e) {
+            log.error("OSS外链获取失败:{}", e.getMessage());
+            throw new ServiceException(Code.OSS_ERROR);
+        }
     }
 
     // 登录业务

@@ -5,6 +5,7 @@ import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.vo.BrandDetailVo;
 import com.ghml.feiniao.common.vo.BrandVo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author YUHUAI
@@ -20,5 +21,9 @@ public interface IBrandService extends IService<BrandEntity> {
 
     BrandVo refreshToken(String refreshToken);
 
-    BrandDetailVo getBrandById(String brandId);
+    BrandDetailVo getBrandById();
+
+    String uploadAvatar(MultipartFile file);
+
+    String getAvatarUrl(String filename);
 }

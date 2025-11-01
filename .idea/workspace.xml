@@ -4,22 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="分页获取收藏列表，取消收藏">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1dca92d1-ab0e-45dd-a0f9-e385bf508618.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1dca92d1-ab0e-45dd-a0f9-e385bf508618.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="取消framework模块">
+      <change afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/config/MinIOConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/config/MinIOProps.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/utils/MinIOUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-dicts/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-dicts/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/src/main/java/com/ghml/feiniao/framework/FeiniaoFrameworkApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/src/main/java/com/ghml/feiniao/framework/config/MybatisPlusConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/config/MybatisPlusConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/src/main/java/com/ghml/feiniao/framework/config/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/config/RedisConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-framework/src/main/java/com/ghml/feiniao/framework/service/RedisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/service/RedisService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-security/src/main/java/com/ghml/feiniao/security/config/JwtAuthenticationTokenFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/api/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/exception/GlobalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-common/src/main/java/com/ghml/feiniao/common/exception/GlobalException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/controller/BrandController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/IBrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/IBrandService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/BrandServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/java/com/ghml/feiniao/users/service/impl/BrandServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/feiniao-users/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -161,6 +157,9 @@
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpringBootOptions">
+    <option name="showAdditionalConfigNotification" value="false" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b25dc729-7f02-420a-8218-bcb7112b3b42" name="Changes" comment="" />
@@ -189,6 +188,8 @@
       <workItem from="1761702741868" duration="5002000" />
       <workItem from="1761707792017" duration="31812000" />
       <workItem from="1761892639064" duration="646000" />
+      <workItem from="1761893328097" duration="440000" />
+      <workItem from="1761893805317" duration="11907000" />
     </task>
     <task id="LOCAL-00001" summary="登录，注册，分页查询创作者，token相关">
       <created>1761659197254</created>
@@ -239,7 +240,14 @@
       <option name="project" value="LOCAL" />
       <updated>1761807380114</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="取消framework模块">
+      <created>1761893706362</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1761893706362</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -256,7 +264,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="origin/main" />
                       </list>
                     </value>
                   </entry>
@@ -276,7 +284,8 @@
     <MESSAGE value="根据编号获取产品主信息" />
     <MESSAGE value="收藏创作者" />
     <MESSAGE value="分页获取产品主收藏的创作者列表" />
-    <option name="LAST_COMMIT_MESSAGE" value="分页获取产品主收藏的创作者列表" />
+    <MESSAGE value="取消framework模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="取消framework模块" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

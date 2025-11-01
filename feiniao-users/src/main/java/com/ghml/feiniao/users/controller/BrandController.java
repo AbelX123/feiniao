@@ -9,6 +9,7 @@ import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.users.service.IBrandService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author YUHUAI
@@ -63,11 +64,33 @@ public class BrandController {
     }
 
     // 获取产品主信息
-    @GetMapping("/{brandId}")
-    public R<BrandDetailVo> getBrandById(@PathVariable("brandId") String brandId) {
+    @GetMapping
+    public R<BrandDetailVo> getBrandById() {
         try {
-            BrandDetailVo vo = brandService.getBrandById(brandId);
+            BrandDetailVo vo = brandService.getBrandById();
             return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 产品主头像上传OSS
+    @PostMapping("/avatar")
+    public R<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        try {
+            String s = brandService.uploadAvatar(file);
+            return R.ok(s);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取文件外链
+    @GetMapping("/avatar")
+    public R<String> getAvatarUrl(@RequestParam("filename") String filename) {
+        try {
+            String url = brandService.getAvatarUrl(filename);
+            return R.ok(url);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

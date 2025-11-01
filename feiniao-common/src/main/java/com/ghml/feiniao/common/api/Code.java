@@ -35,7 +35,11 @@ public enum Code {
 
     // 模糊错误
     FAILED("9999", "系统错误"),
-    OPERATION_FAILED("9001", "操作失败，请稍后重试");
+    OPERATION_FAILED("9001", "操作失败，请稍后重试"),
+
+    // 文件服务错误
+    OSS_ERROR("2000", "文件服务错误"),
+    OSS_NOT_EXIST("2001", "文件资源不存在");
 
     private final String code;
     private final String msg;

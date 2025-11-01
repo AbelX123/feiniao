@@ -43,6 +43,7 @@
         <fastjson2.version>2.0.49</fastjson2.version>
         <jjwt.version>0.12.6</jjwt.version>
         <mysql.version>8.0.28</mysql.version>
+        <minio.version>8.5.17</minio.version>
     </properties>
 
     <!-- ✅ 仅声明子模块可能公用的依赖版本 -->
@@ -72,6 +73,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
+                <version>3.3.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
                 <version>3.3.7</version>
             </dependency>
 
@@ -120,6 +126,11 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
