@@ -8,6 +8,7 @@ import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author YUHUAI
@@ -70,5 +71,16 @@ public class CreatorController {
     public R<PageResult<CreatorVo>> favoriteCreators(@RequestBody CreatorDto creatorDto) {
         PageResult<CreatorVo> vos = creatorService.favoriteCreators(creatorDto);
         return R.ok(vos);
+    }
+
+    // 创作者视频上传到OSS
+    @PostMapping("/video")
+    public R<String> uploadVideo(@RequestParam("video") MultipartFile video) {
+        try {
+            String s = creatorService.uploadVideo(video);
+            return R.ok(s);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
     }
 }

@@ -21,8 +21,6 @@ public class MinIOProps {
     private String accessKey;
     // 密码
     private String secretKey;
-    // 桶名
-    private String bucketName;
     // cdn前缀
     private String cdnPrefix;
 

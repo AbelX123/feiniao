@@ -1,6 +1,5 @@
 package com.ghml.feiniao.users.utils;
 
-import com.ghml.feiniao.users.config.MinIOConfig;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
@@ -19,22 +18,22 @@ public class MinIOUtils {
 
     // 上传文件到MinIO
     public static String uploadFile(MinioClient minioClient,
-                                    MinIOConfig minIOConfig,
                                     MultipartFile file,
+                                    String bucket,
                                     String filename) throws Exception {
         // 检查存储桶是否存在，不存在则创建
         if (!minioClient.bucketExists(BucketExistsArgs.builder()
-                .bucket(minIOConfig.getMinIOProps().getBucketName())
+                .bucket(bucket)
                 .build())) {
             minioClient.makeBucket(MakeBucketArgs.builder()
-                    .bucket(minIOConfig.getMinIOProps().getBucketName())
+                    .bucket(bucket)
                     .build());
         }
 
         // 上传文件
         ObjectWriteResponse resp = minioClient.putObject(
                 PutObjectArgs.builder()
-                        .bucket(minIOConfig.getMinIOProps().getBucketName())          // 存储桶名称
+                        .bucket(bucket)          // 存储桶名称
                         .object(filename)          // 对象名称（文件名,可以包含目录, test/随机字符串.txt）
                         .stream(file.getInputStream(), file.getSize(), -1)  // 文件流, 文件大小, 每次读取上传大小，-1表示自动
                         .contentType(file.getContentType())  // 文件类型，比如 image/jpeg
@@ -45,15 +44,17 @@ public class MinIOUtils {
 
     // 获取文件url
     public static String getObjectUrl(MinioClient minioClient,
-                                      MinIOConfig minIOConfig,
+                                      String bucket,
                                       String filename,
                                       Integer expiry) throws Exception {
-        return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
-                .method(Method.GET)
-                .bucket(minIOConfig.getMinIOProps().getBucketName())
-                .object(filename)
-                .expiry(expiry, TimeUnit.MINUTES) // 临时访问有效期
-                .build());
+        return minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                        .method(Method.GET)
+                        .bucket(bucket)
+                        .object(filename)
+                        .expiry(expiry, TimeUnit.MINUTES) // 临时访问有效期
+                        .build()
+        );
     }
 
 }

@@ -3,6 +3,7 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.Bucket;
 import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
@@ -12,10 +13,15 @@ import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
+import com.ghml.feiniao.users.config.MinIOConfig;
 import com.ghml.feiniao.users.service.CreatorService;
+import com.ghml.feiniao.users.utils.MinIOUtils;
+import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +39,15 @@ import java.util.stream.Collectors;
 public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity> implements CreatorService {
 
     private final CreatorMapper creatorMapper;
+    private final MinioClient minioClient;
+    private final MinIOConfig minIOConfig;
 
-    public CreatorServiceImpl(CreatorMapper creatorMapper) {
+    public CreatorServiceImpl(CreatorMapper creatorMapper,
+                              MinioClient minioClient,
+                              MinIOConfig minIOConfig) {
         this.creatorMapper = creatorMapper;
+        this.minioClient = minioClient;
+        this.minIOConfig = minIOConfig;
     }
 
     // 多条件分页查询创作者
@@ -168,6 +180,19 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .size(result.getSize())
                 .pages(result.getPages())
                 .build();
+    }
+
+    // 上传视频到OSS
+    @Override
+    public String uploadVideo(MultipartFile video) {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        String filename = currentUserId + "." + StringUtils.substringAfter(video.getOriginalFilename(), ".");
+        try {
+            return MinIOUtils.uploadFile(minioClient, video, Bucket.VIDEOS.getName(), filename);
+        } catch (Exception e) {
+            log.error("OSS视频上传失败:{}", e.getMessage());
+            throw new ServiceException(Code.OSS_ERROR);
+        }
     }
 
     // 将Entity列表转换为VO列表

@@ -6,6 +6,7 @@ import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author YUHUAI
@@ -23,4 +24,6 @@ public interface CreatorService extends IService<CreatorEntity> {
     void unfollowCreator(String creatorId);
 
     PageResult<CreatorVo> favoriteCreators(CreatorDto creatorDto);
+
+    String uploadVideo(MultipartFile video);
 }

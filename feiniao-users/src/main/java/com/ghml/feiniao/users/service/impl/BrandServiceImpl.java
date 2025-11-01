@@ -3,6 +3,7 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.Bucket;
 import com.ghml.feiniao.common.constants.MemberLevel;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.dto.BrandDto;
@@ -132,7 +133,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
         String currentUserId = SecurityUtils.getCurrentUserId();
         String filename = currentUserId + "." + StringUtils.substringAfter(file.getOriginalFilename(), ".");
         try {
-            return MinIOUtils.uploadFile(minioClient, minIOConfig, file, filename);
+            return MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), filename);
         } catch (Exception e) {
             log.error("OSS文件上传失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
@@ -148,7 +149,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
             throw new ServiceException(Code.OSS_NOT_EXIST);
         }
         try {
-            return MinIOUtils.getObjectUrl(minioClient, minIOConfig, filename, 30);
+            return MinIOUtils.getObjectUrl(minioClient, Bucket.AVATARS.getName(), filename, 30);
         } catch (Exception e) {
             log.error("OSS外链获取失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
