@@ -8,6 +8,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author YUHUAI
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
  * @description 创作者
  */
 @Data
-@TableName("creator_user")
+@TableName("creator_profiles")
 public class CreatorEntity implements Serializable {
 
     @Serial
@@ -24,13 +25,18 @@ public class CreatorEntity implements Serializable {
 
     @TableId("user_id")
     private String userId; // 用户编号
-
-    private String username; // 用户名称
-    private String password; // 用户密码
+    private String username; // 用户名
+    private String avatar; // 头像地址
+    private String phoneCountryCode; // 手机号国家代码
+    private String phoneNumber; // 手机号
+    private String phoneFull; // phoneCountryCode + phoneNumber
+    private Integer phoneVerified; // 是否验证 0-未验证 1-已验证
+    private Date verifiedAt; // 验证时间
     private BigDecimal videoPrice; // 视频报价
     private String countryCode; // 国家代码
     private Integer gender; // 性别
     private String ageRange; // 年龄范围
+    private Integer isAvailable; // 是否接单 0-否 1-是
 
     @TableField(exist = false)
     private String countryName; // 关联的country_name

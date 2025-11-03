@@ -44,9 +44,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 配置路径管理
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/api/brands",
-                                "/api/brands/login",
-                                "/api/brands/refresh-token")
+                                "/api/users",
+                                "/api/users/login",
+                                "/api/users/refresh-token")
                         // 允许通过
                         .permitAll()
                         // 其余必须验证

@@ -13,7 +13,6 @@ import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
-import com.ghml.feiniao.users.config.MinIOConfig;
 import com.ghml.feiniao.users.service.CreatorService;
 import com.ghml.feiniao.users.utils.MinIOUtils;
 import io.minio.MinioClient;
@@ -40,14 +39,11 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
 
     private final CreatorMapper creatorMapper;
     private final MinioClient minioClient;
-    private final MinIOConfig minIOConfig;
 
     public CreatorServiceImpl(CreatorMapper creatorMapper,
-                              MinioClient minioClient,
-                              MinIOConfig minIOConfig) {
+                              MinioClient minioClient) {
         this.creatorMapper = creatorMapper;
         this.minioClient = minioClient;
-        this.minIOConfig = minIOConfig;
     }
 
     // 多条件分页查询创作者
@@ -69,6 +65,37 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .build();
     }
 
+    // 查询创作者类别
+    @Override
+    public List<String> getModelTypesById(String creatorId) {
+        return creatorMapper.getModelTypesById(creatorId);
+    }
+
+    // 查询创作者平台
+    @Override
+    public List<String> getPlatforms(String creatorId) {
+        return creatorMapper.getPlatforms(creatorId);
+    }
+
+    // 查询擅长品类
+    @Override
+    public List<String> getSpecialties(String creatorId) {
+        return creatorMapper.getSpecialties(creatorId);
+    }
+
+    // 查询模特标签
+    @Override
+    public List<String> getTags(String creatorId) {
+        return creatorMapper.getTags(creatorId);
+    }
+
+    // 查询案例
+    @Override
+    public List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId) {
+        return creatorMapper.getCaseVos(creatorId);
+    }
+
+
     // 查询创作者详情
     @Override
     public CreatorDetailVo getCreatorById(String creatorId) {
@@ -77,16 +104,16 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
             throw new ServiceException(Code.USER_NOT_EXIST);
         }
         CreatorEntity entity = opt.get();
-        // 查询模特类别
-        List<String> types = creatorMapper.getModelTypesById(creatorId);
+        // 查询类别
+        List<String> types = this.getModelTypesById(creatorId);
         // 查询平台
-        List<String> platforms = creatorMapper.getPlatforms(creatorId);
+        List<String> platforms = this.getPlatforms(creatorId);
         // 查询擅长品类
-        List<String> specialties = creatorMapper.getSpecialties(creatorId);
+        List<String> specialties = this.getSpecialties(creatorId);
         // 查询模特标签
-        List<String> tags = creatorMapper.getTags(creatorId);
+        List<String> tags = this.getTags(creatorId);
         // 查询案例
-        List<CreatorDetailVo.CaseVo> caseVos = creatorMapper.getCaseVos(creatorId);
+        List<CreatorDetailVo.CaseVo> caseVos = this.getCaseVos(creatorId);
         // 构建vo
         return CreatorDetailVo.builder()
                 .creatorId(creatorId)
@@ -99,58 +126,6 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .tags(tags)
                 .caseVos(caseVos)
                 .build();
-    }
-
-    // 收藏创作者
-    @Override
-    public void followCreator(String creatorId) {
-        // 查询产品主编号
-        Optional<String> brandIdOpt = SecurityUtils.getCurrentUserIdOptional();
-        if (brandIdOpt.isEmpty()) {
-            throw new ServiceException(Code.USER_NOT_EXIST);
-        }
-        // 检查creatorId存在
-        Optional<CreatorEntity> opt = this.getOptById(creatorId);
-        if (opt.isEmpty()) {
-            throw new ServiceException(Code.USER_NOT_EXIST);
-        }
-        // 重复收藏，幂等处理，静默成功
-        boolean isExist = creatorMapper.existsFavoriteRelation(brandIdOpt.get(), creatorId);
-        if (isExist) {
-            return;
-        }
-        try {
-            creatorMapper.saveBrandCreator(brandIdOpt.get(), creatorId);
-        } catch (Exception e) {
-            log.error("收藏创作者数据库操作错误:{}", e.getMessage());
-            throw new ServiceException(Code.OPERATION_FAILED);
-        }
-    }
-
-    // 取消收藏创作者
-    @Override
-    public void unfollowCreator(String creatorId) {
-        // 查询产品主编号
-        Optional<String> brandIdOpt = SecurityUtils.getCurrentUserIdOptional();
-        if (brandIdOpt.isEmpty()) {
-            throw new ServiceException(Code.USER_NOT_EXIST);
-        }
-        // 检查creatorId存在
-        Optional<CreatorEntity> opt = this.getOptById(creatorId);
-        if (opt.isEmpty()) {
-            throw new ServiceException(Code.USER_NOT_EXIST);
-        }
-        // 重复取消，幂等处理，静默成功
-        boolean isExist = creatorMapper.existsFavoriteRelation(brandIdOpt.get(), creatorId);
-        if (!isExist) {
-            return;
-        }
-        try {
-            creatorMapper.deleteBrandCreator(brandIdOpt.get(), creatorId);
-        } catch (Exception e) {
-            log.error("取消创作者数据库操作错误:{}", e.getMessage());
-            throw new ServiceException(Code.OPERATION_FAILED);
-        }
     }
 
     // 通过产品主编号分页获取收藏的创作者
@@ -193,6 +168,11 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
             log.error("OSS视频上传失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
         }
+    }
+
+    @Override
+    public void register(CreatorEntity creator) {
+        this.save(creator);
     }
 
     // 将Entity列表转换为VO列表

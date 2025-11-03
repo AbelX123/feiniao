@@ -24,16 +24,25 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
                                                    @Param("query") CreatorDto query);
 
     // 依据用户编号查询用户信息，country_code->country_name
-    @Select("SELECT " +
-            "    cu.user_id, " +
-            "    cu.username, " +
-            "    cu.country_code, " +
-            "    cu.gender, " +
-            "    c.country_name " +
-            "FROM creator_user cu " +
-            "INNER JOIN country c ON cu.country_code = c.country_code " +
-            "WHERE cu.user_id = #{creatorId}")
+    @Select("SELECT cp.user_id,  " +
+            "       cp.username,  " +
+            "       cp.country_code,  " +
+            "       cp.gender,  " +
+            "       c.country_name  " +
+            "FROM creator_profiles cp  " +
+            "         LEFT JOIN country c ON cp.country_code = c.country_code  " +
+            "WHERE cp.user_id = #{creatorId}")
     Optional<CreatorEntity> getOptByCreatorId(String creatorId);
+
+    // 根据产品主编号获取收藏的创作者列表
+    @Select("SELECT bcm.brand_id, cp.username, cp.video_price, c.country_name, cp.gender, ar.age_range_desc " +
+            "FROM brand_favorite_creators bcm " +
+            "         INNER JOIN creator_profiles cp ON bcm.creator_id = cp.user_id " +
+            "         LEFT JOIN country c ON c.country_code = cp.country_code " +
+            "         LEFT JOIN age_range ar ON ar.age_range = cp.age_range " +
+            "WHERE bcm.brand_id = #{brandId} " +
+            "ORDER BY bcm.brand_id")
+    Page<CreatorEntity> favoriteCreators(Page<CreatorEntity> page, String brandId);
 
     // 依据用户编号查询模特类别
     @Select("SELECT mt.model_type_name " +
@@ -69,35 +78,5 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
             "WHERE creator_id = #{creatorId} " +
             "  AND status = 1")
     List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
-
-    // 收藏创作者
-    @Insert("INSERT INTO brand_creator_mapping(brand_id, creator_id) " +
-            "VALUES (#{brandId}, #{creatorId})")
-    void saveBrandCreator(String brandId, String creatorId);
-
-
-    // 取消收藏创作者
-    @Delete("DELETE " +
-            "FROM brand_creator_mapping " +
-            "WHERE brand_id = #{brandId} " +
-            "  and creator_id = #{creatorId}")
-    void deleteBrandCreator(String brandId, String creatorId);
-
-    // 根据产品主编号获取收藏的创作者列表
-    @Select("SELECT bcm.brand_id, cu.username, cu.video_price, c.country_name, cu.gender, ar.age_range_desc " +
-            "FROM brand_creator_mapping bcm " +
-            "         INNER JOIN creator_user cu ON bcm.creator_id = cu.user_id " +
-            "         LEFT JOIN country c ON c.country_code = cu.country_code " +
-            "         LEFT JOIN age_range ar ON ar.age_range = cu.age_range " +
-            "WHERE bcm.brand_id = #{brandId} " +
-            "ORDER BY bcm.brand_id")
-    Page<CreatorEntity> favoriteCreators(Page<CreatorEntity> page, String brandId);
-
-    // 收藏存在关系判定
-    @Select("SELECT COUNT(1) > 0 " +
-            "FROM brand_creator_mapping " +
-            "WHERE brand_id = #{brandId} " +
-            "  AND creator_id = #{creatorId}")
-    boolean existsFavoriteRelation(String brandId, String creatorId);
 
 }

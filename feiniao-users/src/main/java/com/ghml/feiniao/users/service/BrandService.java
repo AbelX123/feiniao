@@ -1,10 +1,8 @@
 package com.ghml.feiniao.users.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.vo.BrandDetailVo;
-import com.ghml.feiniao.common.vo.BrandVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,17 +11,17 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2025-10-28 21:06
  * @description
  */
-public interface IBrandService extends IService<BrandEntity> {
-
-    BrandVo login(BrandDto userDto);
-
-    void registerCreators(BrandDto brandDto);
-
-    BrandVo refreshToken(String refreshToken);
+public interface BrandService extends IService<BrandEntity> {
 
     BrandDetailVo getBrandById();
+
+    void followCreator(String creatorId);
+
+    void unfollowCreator(String creatorId);
 
     String uploadAvatar(MultipartFile file);
 
     String getAvatarUrl(String filename);
+
+    void register(BrandEntity brandEntity);
 }

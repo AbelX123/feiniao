@@ -1,0 +1,62 @@
+package com.ghml.feiniao.users.controller;
+
+import com.ghml.feiniao.common.api.R;
+import com.ghml.feiniao.common.constants.HttpHeaders;
+import com.ghml.feiniao.common.dto.UserDto;
+import com.ghml.feiniao.common.exception.ServiceException;
+import com.ghml.feiniao.common.vo.UserVo;
+import com.ghml.feiniao.users.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * @author YUHUAI
+ * @version 1.0
+ * @date 2025-11-02 10:41
+ * @description
+ */
+@RequestMapping("/api/users")
+@RestController
+public class UserController {
+
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    // 注册公共接口
+    @PostMapping
+    public R<?> register(@Valid @RequestBody UserDto userDto) {
+        try {
+            String userId = userService.register(userDto);
+            return R.ok(userId);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 登录公共接口
+    @PostMapping("/login")
+    public R<UserVo> login(@RequestBody UserDto userDto) {
+        try {
+            UserVo vo = userService.login(userDto);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 刷新token公共接口
+    @PostMapping("/refresh-token")
+    public R<UserVo> refresh(@RequestHeader(HttpHeaders.REFRESH_TOKEN) String refreshToken) {
+        try {
+            UserVo vo = userService.refreshToken(refreshToken);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+}

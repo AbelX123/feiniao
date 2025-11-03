@@ -24,13 +24,9 @@ public enum Code {
 
     // 用户相关错误码从1000开始
     USER_EXIST("1000", "用户已存在"),
-
     USER_NOT_EXIST("1001", "用户不存在"),
-
     USER_PASSWORD_NOT_MATCH("1002", "用户名或密码错误"),
-
     TOKEN_EXPIRED("1003", "令牌已过期"),
-
     TOKEN_INVALID("1004", "令牌无效"),
 
     // 模糊错误

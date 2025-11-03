@@ -1,13 +1,9 @@
 package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
-import com.ghml.feiniao.common.constants.HttpHeaders;
-import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.BrandDetailVo;
-import com.ghml.feiniao.common.vo.BrandVo;
-import com.ghml.feiniao.users.service.IBrandService;
-import org.apache.commons.lang3.StringUtils;
+import com.ghml.feiniao.users.service.BrandService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,49 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
  * @description 产品主资源入口
  */
 @RestController
-@RequestMapping("/api/brands")
+@RequestMapping("/api/users/brands")
 public class BrandController {
 
-    private final IBrandService brandService;
+    private final BrandService brandService;
 
-    public BrandController(IBrandService brandService) {
+    public BrandController(BrandService brandService) {
         this.brandService = brandService;
-    }
-
-    // 注册
-    @PostMapping
-    public R<?> registerCreator(@RequestBody BrandDto brandDto) {
-        try {
-            brandService.registerCreators(brandDto);
-            return R.ok();
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
-    }
-
-    // 登录
-    @PostMapping("/login")
-    public R<BrandVo> login(@RequestBody BrandDto brandDto) {
-        try {
-            BrandVo vo = brandService.login(brandDto);
-            return R.ok(vo);
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
-    }
-
-    // 刷新token
-    @PostMapping("/refresh-token")
-    public R<BrandVo> refresh(@RequestHeader(HttpHeaders.REFRESH_TOKEN) String refreshToken) {
-        if (StringUtils.isBlank(refreshToken)) {
-            return R.failed("刷新令牌不能为空");
-        }
-        try {
-            BrandVo vo = brandService.refreshToken(refreshToken);
-            return R.ok(vo);
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
     }
 
     // 获取产品主信息
@@ -69,6 +29,28 @@ public class BrandController {
         try {
             BrandDetailVo vo = brandService.getBrandById();
             return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 收藏创作者
+    @PostMapping("/brand/favorite/creators/{creatorId}")
+    public R<?> followCreator(@PathVariable("creatorId") String creatorId) {
+        try {
+            brandService.followCreator(creatorId);
+            return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 取消收藏创作者
+    @DeleteMapping("/brand/favorite/creators/{creatorId}")
+    public R<?> unFollowCreator(@PathVariable("creatorId") String creatorId) {
+        try {
+            brandService.unfollowCreator(creatorId);
+            return R.ok();
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

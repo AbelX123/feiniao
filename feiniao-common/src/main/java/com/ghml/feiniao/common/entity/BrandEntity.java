@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author YUHUAI
@@ -14,28 +15,21 @@ import java.io.Serializable;
  * @description 产品主
  */
 @Data
-@TableName("brand_user")
+@TableName("brand_profiles")
 public class BrandEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // 用户编号
     @TableId("user_id")
-    private String userId;
-
-    // 用户名称
+    private String userId; // 用户编号
     private String username;
-
-    // 用户密码
-    private String password;
-
-    // 手机号
-    private String phone;
-
-    // 头像地址
     private String avatar;
-
-    // 用户等级
-    private Integer memberLevel;
+    private String phoneCountryCode;
+    private String phoneNumber;
+    private String phoneFull;
+    private Integer phoneVerified;
+    private Date verifiedAt;
+    private Date createTime;
+    private Date updateTime;
 }

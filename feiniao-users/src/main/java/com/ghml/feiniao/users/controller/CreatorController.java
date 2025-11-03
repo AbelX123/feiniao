@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @description 创作者资源入口
  */
 @RestController
-@RequestMapping("/api/creators")
+@RequestMapping("/api/users/creators")
 public class CreatorController {
 
     private final CreatorService creatorService;
@@ -42,28 +42,6 @@ public class CreatorController {
     public R<CreatorDetailVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
         CreatorDetailVo vo = creatorService.getCreatorById(creatorId);
         return R.ok(vo);
-    }
-
-    // 收藏创作者
-    @PostMapping("/{creatorId}/favorites")
-    public R<?> followCreator(@PathVariable("creatorId") String creatorId) {
-        try {
-            creatorService.followCreator(creatorId);
-            return R.ok();
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
-    }
-
-    // 取消收藏创作者
-    @DeleteMapping("/{creatorId}/favorites")
-    public R<?> unFollowCreator(@PathVariable("creatorId") String creatorId) {
-        try {
-            creatorService.unfollowCreator(creatorId);
-            return R.ok();
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
     }
 
     // 通过产品主编号分页获取收藏的创作者

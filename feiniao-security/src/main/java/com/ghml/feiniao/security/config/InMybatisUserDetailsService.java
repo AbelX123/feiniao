@@ -2,9 +2,9 @@ package com.ghml.feiniao.security.config;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ghml.feiniao.common.api.Code;
-import com.ghml.feiniao.common.entity.BrandEntity;
+import com.ghml.feiniao.common.entity.UserEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
-import com.ghml.feiniao.common.mapper.BrandMapper;
+import com.ghml.feiniao.common.mapper.UserMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,22 +22,22 @@ import java.util.Objects;
 @Service
 public class InMybatisUserDetailsService implements UserDetailsService {
 
-    private final BrandMapper brandMapper;
+    private final UserMapper userMapper;
 
     // 构造器注入
-    public InMybatisUserDetailsService(BrandMapper brandMapper) {
-        this.brandMapper = brandMapper;
+    public InMybatisUserDetailsService(UserMapper userMapper) {
+        this.userMapper = userMapper;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 封装查询条件
-        LambdaQueryWrapper<BrandEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(BrandEntity::getUsername, username);
-        BrandEntity brandEntity = brandMapper.selectOne(wrapper);
-        if (Objects.isNull(brandEntity)) {
+        LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserEntity::getUsername, username);
+        UserEntity userEntity = userMapper.selectOne(wrapper);
+        if (Objects.isNull(userEntity)) {
             throw new ServiceException(Code.USER_PASSWORD_NOT_MATCH);
         }
-        return new MyUserDetails(brandEntity.getUserId(), username, brandEntity.getPassword(), Collections.emptySet());
+        return new MyUserDetails(userEntity.getUserId(), username, userEntity.getPassword(), Collections.emptySet());
     }
 }

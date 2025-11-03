@@ -8,6 +8,8 @@ import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @author YUHUAI
  * @version 1.0
@@ -19,11 +21,19 @@ public interface CreatorService extends IService<CreatorEntity> {
 
     CreatorDetailVo getCreatorById(String creatorId);
 
-    void followCreator(String creatorId);
-
-    void unfollowCreator(String creatorId);
-
     PageResult<CreatorVo> favoriteCreators(CreatorDto creatorDto);
 
     String uploadVideo(MultipartFile video);
+
+    void register(CreatorEntity creator);
+
+    List<String> getModelTypesById(String creatorId);
+
+    List<String> getPlatforms(String creatorId);
+
+    List<String> getSpecialties(String creatorId);
+
+    List<String> getTags(String creatorId);
+
+    List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
 }
