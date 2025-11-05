@@ -2,8 +2,8 @@ package com.ghml.feiniao.security.config;
 
 import com.ghml.feiniao.common.constants.HttpHeaders;
 import com.ghml.feiniao.common.constants.RedisPrefix;
-import com.ghml.feiniao.common.utils.JwtUtils;
 import com.ghml.feiniao.common.service.RedisService;
+import com.ghml.feiniao.common.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 /**
  * @author YUHUAI
@@ -32,9 +32,12 @@ import java.util.Collections;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final RedisService redisService;
+    private final InMybatisUserDetailsService inMybatisUserDetailsService;
 
-    public JwtAuthenticationTokenFilter(RedisService redisService) {
+    public JwtAuthenticationTokenFilter(RedisService redisService,
+                                        InMybatisUserDetailsService inMybatisUserDetailsService) {
         this.redisService = redisService;
+        this.inMybatisUserDetailsService = inMybatisUserDetailsService;
     }
 
     @Override
@@ -73,11 +76,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         // 封装Authentication对象
-        MyUserDetails details = new MyUserDetails();
-        details.setUserId(userId);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(details, null, Collections.emptySet());
+        UserDetails details = inMybatisUserDetailsService.loadUserByUserId(userId);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         // 将Authentication存入spring security上下文
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // 链式调用

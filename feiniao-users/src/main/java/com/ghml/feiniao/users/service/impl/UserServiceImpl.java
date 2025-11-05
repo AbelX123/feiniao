@@ -20,6 +20,7 @@ import com.ghml.feiniao.users.service.CreatorService;
 import com.ghml.feiniao.users.service.RoleService;
 import com.ghml.feiniao.users.service.UserService;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +39,7 @@ import java.util.UUID;
  * @date 2025-11-02 11:06
  * @description
  */
+@Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
 
@@ -117,13 +119,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                     }
                 } catch (Exception e) {
                     status.setRollbackOnly();
-                    e.printStackTrace();
+                    log.warn("DB 事务执行异常:{}", e.getMessage());
                     throw new ServiceException(Code.OPERATION_FAILED);
                 }
             });
             return userId;
         } catch (TransactionException e) {
-            throw new RuntimeException(e);
+            log.warn("DB 事务操作异常:{}", e.getMessage());
+            throw new ServiceException(Code.OPERATION_FAILED);
         }
     }
 

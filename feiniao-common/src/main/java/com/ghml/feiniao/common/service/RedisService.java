@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,6 +44,11 @@ public class RedisService {
     // 获取
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
+    }
+
+    // 获取set元素
+    public Set<Object> members(String key) {
+        return redisTemplate.opsForSet().members(key);
     }
 
     // 批量删除

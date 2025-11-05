@@ -29,17 +29,22 @@ public class SecurityConfig {
 
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     private final MyAuthenticationProvider myAuthenticationProvider;
+    private final DynamicAuthorizationManager dynamicAuthorizationManager;
 
     // 构造注入
-    public SecurityConfig(JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter, InMybatisUserDetailsService inMybatisUserDetailsService, MyAuthenticationProvider myAuthenticationProvider) {
+    public SecurityConfig(JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter,
+                          MyAuthenticationProvider myAuthenticationProvider,
+                          DynamicAuthorizationManager dynamicAuthorizationManager) {
         this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
         this.myAuthenticationProvider = myAuthenticationProvider;
+        this.dynamicAuthorizationManager = dynamicAuthorizationManager;
     }
 
     // 自定义过滤器链
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) //关闭csrf保护
+        http.
+                csrf(AbstractHttpConfigurer::disable) //关闭csrf保护
                 // 设置会话管理策略，STATELESS——无状态，不创建和使用http session.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 配置路径管理
@@ -50,7 +55,9 @@ public class SecurityConfig {
                         // 允许通过
                         .permitAll()
                         // 其余必须验证
-                        .anyRequest().authenticated());
+                        .anyRequest()
+                        .access(dynamicAuthorizationManager)
+                );
 
         // 添加过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
