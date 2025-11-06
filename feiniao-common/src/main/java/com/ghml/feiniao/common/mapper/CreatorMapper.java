@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
-import com.ghml.feiniao.common.vo.CreatorDetailVo;
-import org.apache.ibatis.annotations.*;
+import com.ghml.feiniao.common.vo.CreatorVo;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +79,6 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
             "FROM creator_case " +
             "WHERE creator_id = #{creatorId} " +
             "  AND status = 1")
-    List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
+    List<CreatorVo.CaseVo> getCaseVos(String creatorId);
 
 }

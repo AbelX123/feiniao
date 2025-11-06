@@ -1,6 +1,9 @@
 package com.ghml.feiniao.common.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author YUHUAI
@@ -9,7 +12,12 @@ import lombok.Data;
  * @description
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BrandVo {
-    private String access_token;
-    private String refresh_token;
+    private String userId;
+    private String username;
+    private String phone;
+    private String avatar;
 }

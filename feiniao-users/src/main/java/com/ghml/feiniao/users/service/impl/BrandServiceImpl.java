@@ -10,7 +10,7 @@ import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.entity.FavoriteEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.BrandMapper;
-import com.ghml.feiniao.common.vo.BrandDetailVo;
+import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.BrandService;
 import com.ghml.feiniao.users.service.CreatorService;
@@ -56,13 +56,13 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
 
     // 根据编号查询产品主信息
     @Override
-    public BrandDetailVo getBrandById() {
+    public BrandVo getBrandById() {
         Optional<BrandEntity> opt = this.getOptById(SecurityUtils.getCurrentUserId());
         if (opt.isEmpty()) {
             throw new ServiceException(Code.USER_NOT_EXIST);
         }
         BrandEntity entity = opt.get();
-        return BrandDetailVo.builder()
+        return BrandVo.builder()
                 .userId(SecurityUtils.getCurrentUserId())
                 .username(entity.getUsername())
                 .phone(entity.getPhoneNumber())

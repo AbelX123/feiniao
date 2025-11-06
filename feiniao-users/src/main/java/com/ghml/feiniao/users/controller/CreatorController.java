@@ -4,7 +4,6 @@ import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +38,8 @@ public class CreatorController {
 
     // 获取创作者详情信息
     @GetMapping("/{creatorId}")
-    public R<CreatorDetailVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
-        CreatorDetailVo vo = creatorService.getCreatorById(creatorId);
+    public R<CreatorVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
+        CreatorVo vo = creatorService.getCreatorById(creatorId);
         return R.ok(vo);
     }
 

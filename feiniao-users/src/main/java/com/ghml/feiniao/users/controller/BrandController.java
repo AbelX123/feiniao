@@ -2,7 +2,7 @@ package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.exception.ServiceException;
-import com.ghml.feiniao.common.vo.BrandDetailVo;
+import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.users.service.BrandService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,9 +25,9 @@ public class BrandController {
 
     // 获取产品主信息
     @GetMapping
-    public R<BrandDetailVo> getBrandById() {
+    public R<BrandVo> getBrandById() {
         try {
-            BrandDetailVo vo = brandService.getBrandById();
+            BrandVo vo = brandService.getBrandById();
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public interface CreatorService extends IService<CreatorEntity> {
     PageResult<CreatorVo> selectCreatorsByConditions(CreatorDto creatorDto);
 
-    CreatorDetailVo getCreatorById(String creatorId);
+    CreatorVo getCreatorById(String creatorId);
 
     PageResult<CreatorVo> favoriteCreators(CreatorDto creatorDto);
 
@@ -35,5 +34,5 @@ public interface CreatorService extends IService<CreatorEntity> {
 
     List<String> getTags(String creatorId);
 
-    List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId);
+    List<CreatorVo.CaseVo> getCaseVos(String creatorId);
 }

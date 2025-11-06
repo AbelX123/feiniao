@@ -10,7 +10,6 @@ import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.CreatorMapper;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorDetailVo;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.CreatorService;
@@ -91,14 +90,14 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
 
     // 查询案例
     @Override
-    public List<CreatorDetailVo.CaseVo> getCaseVos(String creatorId) {
+    public List<CreatorVo.CaseVo> getCaseVos(String creatorId) {
         return creatorMapper.getCaseVos(creatorId);
     }
 
 
     // 查询创作者详情
     @Override
-    public CreatorDetailVo getCreatorById(String creatorId) {
+    public CreatorVo getCreatorById(String creatorId) {
         Optional<CreatorEntity> opt = creatorMapper.getOptByCreatorId(creatorId);
         if (opt.isEmpty()) {
             throw new ServiceException(Code.USER_NOT_EXIST);
@@ -113,11 +112,11 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         // 查询模特标签
         List<String> tags = this.getTags(creatorId);
         // 查询案例
-        List<CreatorDetailVo.CaseVo> caseVos = this.getCaseVos(creatorId);
+        List<CreatorVo.CaseVo> caseVos = this.getCaseVos(creatorId);
         // 构建vo
-        return CreatorDetailVo.builder()
-                .creatorId(creatorId)
-                .creatorName(entity.getUsername())
+        return CreatorVo.builder()
+                .userId(creatorId)
+                .username(entity.getUsername())
                 .countryName(entity.getCountryName())
                 .gender(Gender.getDescByCode(entity.getGender()))
                 .modelTypes(types)

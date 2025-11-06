@@ -2,7 +2,7 @@ package com.ghml.feiniao.users.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ghml.feiniao.common.entity.BrandEntity;
-import com.ghml.feiniao.common.vo.BrandDetailVo;
+import com.ghml.feiniao.common.vo.BrandVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface BrandService extends IService<BrandEntity> {
 
-    BrandDetailVo getBrandById();
+    BrandVo getBrandById();
 
     void followCreator(String creatorId);
 
