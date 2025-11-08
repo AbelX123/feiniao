@@ -1,6 +1,7 @@
 package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
+import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.users.service.BrandService;
@@ -28,6 +29,17 @@ public class BrandController {
     public R<BrandVo> getBrandById() {
         try {
             BrandVo vo = brandService.getBrandById();
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 部分更新产品主信息
+    @PatchMapping
+    public R<BrandVo> patchBrand(BrandDto dto) {
+        try {
+            BrandVo vo = brandService.patchBrand(dto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

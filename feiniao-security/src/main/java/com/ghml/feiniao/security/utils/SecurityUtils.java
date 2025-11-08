@@ -1,5 +1,7 @@
 package com.ghml.feiniao.security.utils;
 
+import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.security.config.MyUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +15,7 @@ import java.util.Optional;
  * @description
  */
 public class SecurityUtils {
+
     public static String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -20,7 +23,7 @@ public class SecurityUtils {
             return userDetails.getUserId();
         }
 
-        throw new IllegalStateException("用户未登录或用户信息不完整");
+        throw new ServiceException(Code.USER_NOT_EXIST);
     }
 
     // 安全获取用户ID（避免异常）

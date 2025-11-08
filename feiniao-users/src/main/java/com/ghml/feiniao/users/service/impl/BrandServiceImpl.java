@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.constants.Bucket;
+import com.ghml.feiniao.common.constants.PhoneStatus;
+import com.ghml.feiniao.common.constants.RedisPrefix;
+import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.entity.FavoriteEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.BrandMapper;
+import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.BrandService;
@@ -19,10 +23,10 @@ import com.ghml.feiniao.users.utils.MinIOUtils;
 import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -36,22 +40,18 @@ import java.util.Optional;
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> implements BrandService {
 
     private final MinioClient minioClient;
+    private final CreatorService creatorService;
+    private final FavoriteService favoriteService;
+    private final RedisService redisService;
 
-    private CreatorService creatorService;
-    private FavoriteService favoriteService;
-
-    @Autowired
-    public void setFavoriteService(FavoriteService favoriteService) {
-        this.favoriteService = favoriteService;
-    }
-
-    @Autowired
-    public void setCreatorService(CreatorService creatorService) {
-        this.creatorService = creatorService;
-    }
-
-    public BrandServiceImpl(MinioClient minioClient) {
+    public BrandServiceImpl(MinioClient minioClient,
+                            CreatorService creatorService,
+                            FavoriteService favoriteService,
+                            RedisService redisService) {
         this.minioClient = minioClient;
+        this.creatorService = creatorService;
+        this.favoriteService = favoriteService;
+        this.redisService = redisService;
     }
 
     // 根据编号查询产品主信息
@@ -158,6 +158,41 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     @Override
     public void register(BrandEntity brandEntity) {
         this.save(brandEntity);
+    }
+
+    // 部分更新产品主信息
+    @Override
+    public BrandVo patchBrand(BrandDto dto) {
+        // 获取userId
+        String brandId = SecurityUtils.getCurrentUserId();
+
+        BrandEntity entity = new BrandEntity();
+        // 如果存在手机号更新，验证验证码状态
+        if (!dto.getPhoneFull().isEmpty()) {
+            String key = String.format(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE, dto.getPhoneFull(), brandId);
+            String codeInCache = (String) redisService.get(key);
+            if (StringUtils.isEmpty(codeInCache) || !StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
+                throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
+            } else {
+                // 验证完成让验证码失效
+                Boolean delete = redisService.delete(key);
+                if (!delete) {
+                    throw new ServiceException(Code.OPERATION_FAILED);
+                }
+            }
+            entity.setPhoneCountryCode(dto.getPhoneCountryCode());
+            entity.setPhoneNumber(dto.getPhoneNumber());
+            entity.setPhoneFull(dto.getPhoneFull());
+            entity.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
+            entity.setVerifiedAt(new Date());
+        }
+        entity.setUserId(brandId);
+        entity.setUsername(dto.getUsername());
+        boolean update = this.updateById(entity);
+        if (!update) {
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+        return getBrandById();
     }
 
 }

@@ -28,6 +28,7 @@ public enum Code {
     USER_PASSWORD_NOT_MATCH("1002", "用户名或密码错误"),
     TOKEN_EXPIRED("1003", "令牌已过期"),
     TOKEN_INVALID("1004", "令牌无效"),
+    VERIFIED_CODE_EXPIRED("1005", "验证码已过期"),
 
     // 模糊错误
     FAILED("9999", "系统错误"),

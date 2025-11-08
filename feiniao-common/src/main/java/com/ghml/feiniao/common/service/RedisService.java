@@ -51,6 +51,11 @@ public class RedisService {
         return redisTemplate.opsForSet().members(key);
     }
 
+    // 删除
+    public Boolean delete(String key) {
+        return redisTemplate.delete(key);
+    }
+
     // 批量删除
     public Long deleteBatch(String... keys) {
         return redisTemplate.delete(new HashSet<>(Arrays.asList(keys)));

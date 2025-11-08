@@ -1,6 +1,9 @@
 package com.ghml.feiniao.common.dto;
 
+import com.ghml.feiniao.common.annos.ValidPhoneNumberGroup;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author YUHUAI
@@ -9,7 +12,13 @@ import lombok.Data;
  * @description
  */
 @Data
+@ValidPhoneNumberGroup
 public class BrandDto {
     private String username;
-    private String password;
+    private String phoneCountryCode;
+    private String phoneNumber;
+    private String phoneFull;
+    private String verifiedCode;
+    private Integer phoneVerified;
+    private Date verifiedAt;
 }
