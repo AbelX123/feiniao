@@ -3,8 +3,6 @@ package com.ghml.feiniao.common.dto;
 import com.ghml.feiniao.common.annos.ValidPhoneNumberGroup;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @author YUHUAI
  * @version 1.0
@@ -20,5 +18,4 @@ public class BrandDto {
     private String phoneFull;
     private String verifiedCode;
     private Integer phoneVerified;
-    private Date verifiedAt;
 }

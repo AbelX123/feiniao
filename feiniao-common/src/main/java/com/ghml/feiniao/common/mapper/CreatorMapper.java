@@ -2,7 +2,7 @@ package com.ghml.feiniao.common.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ghml.feiniao.common.dto.CreatorDto;
+import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.vo.CreatorVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,7 +23,7 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
 
     // 多条件分页查询创作者
     Page<CreatorEntity> selectCreatorsByConditions(@Param("page") Page<CreatorEntity> page,
-                                                   @Param("query") CreatorDto query);
+                                                   @Param("query") CreatorsDto query);
 
     // 依据用户编号查询用户信息，country_code->country_name
     @Select("SELECT cp.user_id,  " +

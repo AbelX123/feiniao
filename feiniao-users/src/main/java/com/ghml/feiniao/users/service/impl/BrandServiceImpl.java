@@ -187,7 +187,9 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
             entity.setVerifiedAt(new Date());
         }
         entity.setUserId(brandId);
-        entity.setUsername(dto.getUsername());
+        if (StringUtils.isNotBlank(dto.getUsername())) {
+            entity.setUsername(dto.getUsername());
+        }
         boolean update = this.updateById(entity);
         if (!update) {
             throw new ServiceException(Code.OPERATION_FAILED);

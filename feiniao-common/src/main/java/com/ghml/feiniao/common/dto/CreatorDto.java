@@ -1,27 +1,38 @@
 package com.ghml.feiniao.common.dto;
 
-import com.ghml.feiniao.common.api.PageParam;
+import com.ghml.feiniao.common.annos.ValidPhoneNumberGroup;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author YUHUAI
  * @version 1.0
- * @date 2025-10-28 21:06
- * @description
+ * @date 2025-11-08 23:11
+ * @description 创作者dto
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class CreatorDto extends PageParam {
-
-    // 筛选条件
-    private List<String> platformCodes; // 平台编码
-    private List<String> countryCodes; // 国家代码
-    private List<Integer> modelTypeIds; // 模特类型编号
-    private List<Integer> modelTagIds; // 模特标签编号
-    private List<Integer> genders; // 模特性别
-    private List<String> ageRanges; // 模特年龄范围
-    private List<Integer> specialtyIds; // 擅长品类编号
+@ValidPhoneNumberGroup
+public class CreatorDto {
+    // 单一属性
+    private String username;
+    private String avatar;
+    private String phoneCountryCode;
+    private String phoneNumber;
+    private String phoneFull;
+    private Integer phoneVerified;
+    private String verifiedCode; // 验证码
+    private Date verifiedAt;
+    private BigDecimal videoPrice;
+    private String countryCode;
+    private Integer gender;
+    private String ageRange;
+    private Integer isAvailable;
+    // 关联属性
+    private List<String> platformCodes; //拍摄平台
+    private List<Integer> modelTypeIds; // 模特类型
+    private List<Integer> modelTagIds; // 模特标签
+    private List<Integer> specialtyIds; // 擅长品类
 }

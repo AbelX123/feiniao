@@ -2,6 +2,7 @@ package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.dto.CreatorDto;
+import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorVo;
@@ -26,10 +27,10 @@ public class CreatorController {
     }
 
     // 分页获取创作者列表
-    @PostMapping("/query")
-    public R<PageResult<CreatorVo>> getCreators(@RequestBody CreatorDto creatorDto) {
+    @PostMapping
+    public R<PageResult<CreatorVo>> getCreators(@RequestBody CreatorsDto creatorsDto) {
         try {
-            PageResult<CreatorVo> vo = creatorService.selectCreatorsByConditions(creatorDto);
+            PageResult<CreatorVo> vo = creatorService.selectCreatorsByConditions(creatorsDto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
@@ -39,23 +40,42 @@ public class CreatorController {
     // 获取创作者详情信息
     @GetMapping("/{creatorId}")
     public R<CreatorVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
-        CreatorVo vo = creatorService.getCreatorById(creatorId);
-        return R.ok(vo);
+        try {
+            CreatorVo vo = creatorService.getCreatorById(creatorId);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 更新创作者详情信息
+    @PatchMapping
+    public R<CreatorVo> patchCreator(@RequestBody CreatorDto dto) {
+        try {
+            CreatorVo vo = creatorService.patchCreator(dto);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
     }
 
     // 通过产品主编号分页获取收藏的创作者
     @GetMapping("/favorite-creators")
-    public R<PageResult<CreatorVo>> favoriteCreators(@RequestBody CreatorDto creatorDto) {
-        PageResult<CreatorVo> vos = creatorService.favoriteCreators(creatorDto);
-        return R.ok(vos);
+    public R<PageResult<CreatorVo>> favoriteCreators(@RequestBody CreatorsDto dto) {
+        try {
+            PageResult<CreatorVo> vos = creatorService.favoriteCreators(dto);
+            return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
     }
 
     // 创作者视频上传到OSS
     @PostMapping("/video")
     public R<String> uploadVideo(@RequestParam("video") MultipartFile video) {
         try {
-            String s = creatorService.uploadVideo(video);
-            return R.ok(s);
+            String respO = creatorService.uploadVideo(video);
+            return R.ok(respO);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

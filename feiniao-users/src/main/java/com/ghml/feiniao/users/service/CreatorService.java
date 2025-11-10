@@ -2,6 +2,7 @@ package com.ghml.feiniao.users.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ghml.feiniao.common.dto.CreatorDto;
+import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.CreatorVo;
@@ -16,11 +17,11 @@ import java.util.List;
  * @description
  */
 public interface CreatorService extends IService<CreatorEntity> {
-    PageResult<CreatorVo> selectCreatorsByConditions(CreatorDto creatorDto);
+    PageResult<CreatorVo> selectCreatorsByConditions(CreatorsDto creatorDto);
 
     CreatorVo getCreatorById(String creatorId);
 
-    PageResult<CreatorVo> favoriteCreators(CreatorDto creatorDto);
+    PageResult<CreatorVo> favoriteCreators(CreatorsDto creatorsDto);
 
     String uploadVideo(MultipartFile video);
 
@@ -35,4 +36,6 @@ public interface CreatorService extends IService<CreatorEntity> {
     List<String> getTags(String creatorId);
 
     List<CreatorVo.CaseVo> getCaseVos(String creatorId);
+
+    CreatorVo patchCreator(CreatorDto dto);
 }

@@ -37,7 +37,7 @@ public class BrandController {
 
     // 部分更新产品主信息
     @PatchMapping
-    public R<BrandVo> patchBrand(BrandDto dto) {
+    public R<BrandVo> patchBrand(@RequestBody BrandDto dto) {
         try {
             BrandVo vo = brandService.patchBrand(dto);
             return R.ok(vo);
