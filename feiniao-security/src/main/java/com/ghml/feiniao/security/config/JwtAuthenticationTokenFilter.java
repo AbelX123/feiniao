@@ -50,6 +50,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        // 移除 "Bearer " 前缀（如果存在）
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7); // "Bearer " 长度是7
+        }
         // 解析token获取userId
         String userId;
         try {

@@ -3,6 +3,9 @@ package com.ghml.feiniao.common.constants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author YUHUAI
  * @version 1.0
@@ -19,4 +22,21 @@ public enum Role {
     private final Integer roleId;
     private final String roleCode;
     private final String roleName;
+
+    private static final Map<Integer, Role> ROLE_MAP = new HashMap<>();
+
+    static {
+        for (Role role : values()) {
+            ROLE_MAP.put(role.getRoleId(), role);
+        }
+    }
+
+    public static Role getByRoleId(Integer roleId) {
+        return ROLE_MAP.get(roleId);
+    }
+
+    public static String getRoleNameById(Integer roleId) {
+        Role role = ROLE_MAP.get(roleId);
+        return role != null ? role.getRoleName() : null;
+    }
 }

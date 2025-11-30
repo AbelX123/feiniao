@@ -16,5 +16,6 @@ public class CreatorTagEntity {
 
     @TableId("creator_id")
     private String creatorId;
+
     private Integer tagId;
 }

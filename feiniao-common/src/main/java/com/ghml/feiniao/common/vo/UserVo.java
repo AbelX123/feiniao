@@ -10,6 +10,8 @@ import lombok.Data;
  */
 @Data
 public class UserVo {
+    private String userId;
+    private String username;
     private String accessToken;
     private String refreshToken;
 }

@@ -3,6 +3,7 @@ package com.ghml.feiniao.security.config;
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.exception.ServiceException;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @description 认证信息验证
  */
 @Data
+@Slf4j
 @Component
 public class MyAuthenticationProvider implements AuthenticationProvider {
 
@@ -41,6 +43,7 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         boolean matches = passwordEncoder.matches(password, userDetails.getPassword());
         if (!matches) {
+            log.info("[{}]密码验证失败!", userDetails.getUsername());
             throw new ServiceException(Code.USER_PASSWORD_NOT_MATCH);
         }
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());

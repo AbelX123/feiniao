@@ -1,7 +1,6 @@
 package com.ghml.feiniao.common.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -17,6 +16,10 @@ public class UserDto {
     private String username;
     @NotBlank(message = "密码不能为空")
     private String password;
-    @NotNull(message = "角色不能为空")
+    @NotBlank(message = "确认密码不能为空")
+    private String confirmPassword;
+
     private Integer roleId;
+
+    private boolean rememberMe;
 }

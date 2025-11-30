@@ -79,7 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     // 公共注册
     @Override
-    public String register(UserDto userDto) {
+    public void signUp(UserDto userDto) {
         // 角色校验
         if (roleService.getOptById(userDto.getRoleId()).isEmpty()) {
             throw new ServiceException(Code.PARAM_ERROR);
@@ -123,7 +123,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                     throw new ServiceException(Code.OPERATION_FAILED);
                 }
             });
-            return userId;
         } catch (TransactionException e) {
             log.warn("DB 事务操作异常:{}", e.getMessage());
             throw new ServiceException(Code.OPERATION_FAILED);
@@ -132,7 +131,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     // 公共登录
     @Override
-    public UserVo login(UserDto userDto) {
+    public UserVo signIn(UserDto userDto) {
         // 密码验证
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword());
@@ -146,6 +145,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         String accessToken = JwtUtils.generateToken(myUserDetails.getUserId());
         String refreshToken = JwtUtils.generateRefreshToken(myUserDetails.getUserId());
         UserVo vo = new UserVo();
+        vo.setUserId(myUserDetails.getUserId());
+        vo.setUsername(myUserDetails.getUsername());
         vo.setAccessToken(accessToken);
         vo.setRefreshToken(refreshToken);
 

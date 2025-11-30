@@ -7,12 +7,12 @@ import com.ghml.feiniao.common.entity.UserEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.RoleMapper;
 import com.ghml.feiniao.common.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -23,6 +23,7 @@ import java.util.Set;
  * @date 2025-10-28 21:06
  * @description 以mybatis plus加载用户数据
  */
+@Slf4j
 @Service
 public class InMybatisUserDetailsService implements UserDetailsService {
 
@@ -43,9 +44,14 @@ public class InMybatisUserDetailsService implements UserDetailsService {
         wrapper.eq(UserEntity::getUsername, username);
         UserEntity user = userMapper.selectOne(wrapper);
         if (Objects.isNull(user)) {
+            log.info("[{}]用户名验证失败!", username);
             throw new ServiceException(Code.USER_PASSWORD_NOT_MATCH);
         }
-        return new MyUserDetails(user.getUserId(), username, user.getPassword(), Collections.emptySet());
+        MyUserDetails myUserDetails = new MyUserDetails();
+        myUserDetails.setUserId(user.getUserId());
+        myUserDetails.setUsername(user.getUsername());
+        myUserDetails.setPassword(user.getPassword());
+        return myUserDetails;
     }
 
     public UserDetails loadUserByUserId(String userId) {
@@ -57,7 +63,12 @@ public class InMybatisUserDetailsService implements UserDetailsService {
         // 查询权限(查询角色，用户和角色是一对一关系)
         RoleEntity role = roleMapper.selectById(user.getRoleId());
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        MyUserDetails myUserDetails = new MyUserDetails();
+        myUserDetails.setUserId(userId);
+        myUserDetails.setUsername(user.getUsername());
+        myUserDetails.setPassword(user.getPassword());
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleCode()));
-        return new MyUserDetails(userId, user.getUsername(), user.getPassword(), authorities);
+        myUserDetails.setAuthorities(authorities);
+        return myUserDetails;
     }
 }

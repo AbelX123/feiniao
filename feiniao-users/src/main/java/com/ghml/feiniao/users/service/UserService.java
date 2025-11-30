@@ -11,9 +11,9 @@ import com.ghml.feiniao.common.vo.UserVo;
  */
 public interface UserService {
 
-    String register(UserDto userDto);
+    void signUp(UserDto userDto);
 
-    UserVo login(UserDto userDto);
+    UserVo signIn(UserDto userDto);
 
     UserVo refreshToken(String refreshToken);
 }

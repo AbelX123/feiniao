@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserController {
 
-
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -27,21 +26,21 @@ public class UserController {
     }
 
     // 注册公共接口
-    @PostMapping
+    @PostMapping("/signUp")
     public R<?> register(@Valid @RequestBody UserDto userDto) {
         try {
-            String userId = userService.register(userDto);
-            return R.ok(userId);
+            userService.signUp(userDto);
+            return R.ok();
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }
     }
 
     // 登录公共接口
-    @PostMapping("/login")
+    @PostMapping("/signIn")
     public R<UserVo> login(@RequestBody UserDto userDto) {
         try {
-            UserVo vo = userService.login(userDto);
+            UserVo vo = userService.signIn(userDto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
