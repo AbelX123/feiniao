@@ -58,4 +58,15 @@ public class UserController {
         }
     }
 
+    // 退出登录
+    @DeleteMapping("/logout")
+    public R<?> logout() {
+        try {
+            userService.logout();
+            return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
 }

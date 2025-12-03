@@ -23,6 +23,8 @@ public class MinIOProps {
     private String secretKey;
     // cdn前缀
     private String cdnPrefix;
+    // 头像外链时间
+    private Integer avatarExpiry;
 
     @Override
     public String toString() {

@@ -15,6 +15,7 @@ import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.utils.JwtUtils;
 import com.ghml.feiniao.common.vo.UserVo;
 import com.ghml.feiniao.security.config.MyUserDetails;
+import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.BrandService;
 import com.ghml.feiniao.users.service.CreatorService;
 import com.ghml.feiniao.users.service.RoleService;
@@ -187,5 +188,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         vo.setRefreshToken(newRefreshToken);
 
         return vo;
+    }
+
+    // 退出登录
+    @Override
+    public void logout() {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        redisService.delete(RedisPrefix.PREFIX_WEB_TOKEN + currentUserId);
+        redisService.delete(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + currentUserId);
     }
 }

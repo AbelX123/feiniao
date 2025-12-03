@@ -16,6 +16,7 @@ import com.ghml.feiniao.common.mapper.BrandMapper;
 import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
+import com.ghml.feiniao.users.config.MinIOProps;
 import com.ghml.feiniao.users.service.BrandService;
 import com.ghml.feiniao.users.service.CreatorService;
 import com.ghml.feiniao.users.service.FavoriteService;
@@ -43,15 +44,18 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     private final CreatorService creatorService;
     private final FavoriteService favoriteService;
     private final RedisService redisService;
+    private final MinIOProps minIOProps;
 
     public BrandServiceImpl(MinioClient minioClient,
                             CreatorService creatorService,
                             FavoriteService favoriteService,
-                            RedisService redisService) {
+                            RedisService redisService,
+                            MinIOProps minIOProps) {
         this.minioClient = minioClient;
         this.creatorService = creatorService;
         this.favoriteService = favoriteService;
         this.redisService = redisService;
+        this.minIOProps = minIOProps;
     }
 
     // 根据编号查询产品主信息
@@ -126,13 +130,18 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     }
 
 
-    // 上传头像到OSS
+    /**
+     * 头像上传
+     * @param file
+     * @return minio外链
+     */
     @Override
     public String uploadAvatar(MultipartFile file) {
         String currentUserId = SecurityUtils.getCurrentUserId();
         String filename = currentUserId + "." + StringUtils.substringAfter(file.getOriginalFilename(), ".");
         try {
-            return MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), filename);
+            String object = MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), filename);
+            return getAvatarUrl(object);
         } catch (Exception e) {
             log.error("OSS文件上传失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
@@ -148,7 +157,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
             throw new ServiceException(Code.OSS_NOT_EXIST);
         }
         try {
-            return MinIOUtils.getObjectUrl(minioClient, Bucket.AVATARS.getName(), filename, 30);
+            return MinIOUtils.getObjectUrl(minioClient, Bucket.AVATARS.getName(), filename, minIOProps.getAvatarExpiry());
         } catch (Exception e) {
             log.error("OSS外链获取失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);

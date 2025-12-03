@@ -16,4 +16,6 @@ public interface UserService {
     UserVo signIn(UserDto userDto);
 
     UserVo refreshToken(String refreshToken);
+
+    void logout();
 }

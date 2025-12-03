@@ -52,7 +52,7 @@ public class MinIOUtils {
                         .method(Method.GET)
                         .bucket(bucket)
                         .object(filename)
-                        .expiry(expiry, TimeUnit.MINUTES) // 临时访问有效期
+                        .expiry(expiry, TimeUnit.HOURS) // 临时访问有效期
                         .build()
         );
     }
