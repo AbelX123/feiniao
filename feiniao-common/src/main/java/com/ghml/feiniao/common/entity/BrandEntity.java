@@ -24,7 +24,6 @@ public class BrandEntity implements Serializable {
     @TableId("user_id")
     private String userId; // 用户编号
     private String username;
-    private String avatar;
     private String phoneCountryCode;
     private String phoneNumber;
     private String phoneFull;

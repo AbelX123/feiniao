@@ -19,5 +19,5 @@ public class BrandVo {
     private String userId;
     private String username;
     private String phone;
-    private String avatar;
+    private AvatarVo avatar;
 }

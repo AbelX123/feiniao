@@ -25,6 +25,8 @@ public class MyUserDetails implements UserDetails {
 
     private String password;
 
+    private Integer roleId;
+
     private Set<SimpleGrantedAuthority> authorities;
 
 }

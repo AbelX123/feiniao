@@ -3,6 +3,7 @@ package com.ghml.feiniao.users.controller;
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.exception.ServiceException;
+import com.ghml.feiniao.common.vo.AvatarVo;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.users.service.BrandService;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class BrandController {
     }
 
     // 获取产品主信息
-    @GetMapping
+    @GetMapping("/me")
     public R<BrandVo> getBrandById() {
         try {
             BrandVo vo = brandService.getBrandById();
@@ -70,10 +71,10 @@ public class BrandController {
 
     // 产品主头像上传OSS
     @PostMapping("/avatar")
-    public R<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
+    public R<AvatarVo> uploadAvatar(@RequestParam("file") MultipartFile file) {
         try {
-            String s = brandService.uploadAvatar(file);
-            return R.ok(s);
+            AvatarVo vo = brandService.uploadAvatar(file);
+            return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }
@@ -81,10 +82,10 @@ public class BrandController {
 
     // 获取文件外链
     @GetMapping("/avatar")
-    public R<String> getAvatarUrl(@RequestParam("filename") String filename) {
+    public R<AvatarVo> getAvatarUrl() {
         try {
-            String url = brandService.getAvatarUrl(filename);
-            return R.ok(url);
+            AvatarVo vo = brandService.getAvatarUrl();
+            return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

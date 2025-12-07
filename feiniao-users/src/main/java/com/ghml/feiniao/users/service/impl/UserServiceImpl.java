@@ -16,20 +16,16 @@ import com.ghml.feiniao.common.utils.JwtUtils;
 import com.ghml.feiniao.common.vo.UserVo;
 import com.ghml.feiniao.security.config.MyUserDetails;
 import com.ghml.feiniao.security.utils.SecurityUtils;
-import com.ghml.feiniao.users.service.BrandService;
-import com.ghml.feiniao.users.service.CreatorService;
-import com.ghml.feiniao.users.service.RoleService;
-import com.ghml.feiniao.users.service.UserService;
+import com.ghml.feiniao.users.service.*;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.UUID;
@@ -42,41 +38,16 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
     private final TransactionTemplate transactionTemplate;
-
-    private CreatorService creatorService;
-    private BrandService brandService;
-    private RoleService roleService;
-
-    @Autowired
-    public void setBrandService(BrandService brandService) {
-        this.brandService = brandService;
-    }
-
-    @Autowired
-    public void setCreatorService(CreatorService creatorService) {
-        this.creatorService = creatorService;
-    }
-
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    public UserServiceImpl(PasswordEncoder passwordEncoder,
-                           AuthenticationManager authenticationManager,
-                           RedisService redisService,
-                           TransactionTemplate transactionTemplate) {
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.redisService = redisService;
-        this.transactionTemplate = transactionTemplate;
-    }
+    private final CreatorService creatorService;
+    private final BrandService brandService;
+    private final RoleService roleService;
 
     // 公共注册
     @Override
@@ -97,37 +68,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         entity.setUsername(userDto.getUsername());
         entity.setPassword(passwordEncoder.encode(userDto.getPassword()));
         entity.setRoleId(userDto.getRoleId());
-        try {
-            transactionTemplate.executeWithoutResult(status -> {
-                try {
-                    // 保存用户实体
-                    UserServiceImpl.this.save(entity);
-                    // 产品主注册
-                    if (userDto.getRoleId().equals(Role.BRAND.getRoleId())) {
-                        BrandEntity brand = new BrandEntity();
-                        brand.setUserId(userId);
-                        brand.setUsername(userDto.getUsername());
-                        brandService.register(brand);
-                    }
-                    // 创作者注册
-                    else if (userDto.getRoleId().equals(Role.CREATOR.getRoleId())) {
-                        CreatorEntity creator = new CreatorEntity();
-                        creator.setUserId(userId);
-                        creator.setUsername(userDto.getUsername());
-                        creatorService.register(creator);
-                    } else {
-                        throw new ServiceException(Code.PARAM_ERROR);
-                    }
-                } catch (Exception e) {
-                    status.setRollbackOnly();
-                    log.warn("DB 事务执行异常:{}", e.getMessage());
-                    throw new ServiceException(Code.OPERATION_FAILED);
+        transactionTemplate.executeWithoutResult(status -> {
+            try {
+                // 保存用户实体
+                UserServiceImpl.this.save(entity);
+                // 产品主注册
+                if (userDto.getRoleId().equals(Role.BRAND.getRoleId())) {
+                    BrandEntity brand = new BrandEntity();
+                    brand.setUserId(userId);
+                    brand.setUsername(userDto.getUsername());
+                    brandService.register(brand);
                 }
-            });
-        } catch (TransactionException e) {
-            log.warn("DB 事务操作异常:{}", e.getMessage());
-            throw new ServiceException(Code.OPERATION_FAILED);
-        }
+                // 创作者注册
+                else if (userDto.getRoleId().equals(Role.CREATOR.getRoleId())) {
+                    CreatorEntity creator = new CreatorEntity();
+                    creator.setUserId(userId);
+                    creator.setUsername(userDto.getUsername());
+                    creatorService.register(creator);
+                } else {
+                    throw new ServiceException(Code.PARAM_ERROR);
+                }
+            } catch (Exception e) {
+                status.setRollbackOnly();
+                log.warn("用户[{}]注册异常: {} 已回滚!", userDto.getUsername(), e.getMessage());
+                throw new ServiceException(Code.OPERATION_FAILED);
+            }
+        });
     }
 
     // 公共登录
@@ -148,6 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         UserVo vo = new UserVo();
         vo.setUserId(myUserDetails.getUserId());
         vo.setUsername(myUserDetails.getUsername());
+        vo.setRoleId(myUserDetails.getRoleId());
         vo.setAccessToken(accessToken);
         vo.setRefreshToken(refreshToken);
 

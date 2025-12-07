@@ -12,6 +12,7 @@ import lombok.Data;
 public class UserVo {
     private String userId;
     private String username;
+    private Integer roleId;
     private String accessToken;
     private String refreshToken;
 }

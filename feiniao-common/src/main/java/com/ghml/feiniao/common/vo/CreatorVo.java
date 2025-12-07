@@ -21,7 +21,6 @@ import java.util.List;
 public class CreatorVo {
     private String userId; // 用户编号
     private String username; // 用户名称
-    private String avatar; // 头像地址
     private String phone_full; // 完整手机号
     private Integer phoneVerified; // 手机号是否经过验证
     private BigDecimal videoPrice; // 视频报价

@@ -1,6 +1,7 @@
 package com.ghml.feiniao.security.config;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -11,14 +12,11 @@ import java.util.List;
  * @date 2025-11-29 15:47
  * @description
  */
+@Getter
 @ConfigurationProperties(prefix = "security")
 public class SecurityConfigProperties {
 
     private List<String> publicEndpoints;
-
-    public List<String> getPublicEndpoints() {
-        return publicEndpoints;
-    }
 
     public void setPublicEndpoints(List<String> publicEndpoints) {
         System.out.println("=== Setting public endpoints: " + publicEndpoints);

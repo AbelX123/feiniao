@@ -51,6 +51,7 @@ public class InMybatisUserDetailsService implements UserDetailsService {
         myUserDetails.setUserId(user.getUserId());
         myUserDetails.setUsername(user.getUsername());
         myUserDetails.setPassword(user.getPassword());
+        myUserDetails.setRoleId(user.getRoleId());
         return myUserDetails;
     }
 
@@ -67,6 +68,7 @@ public class InMybatisUserDetailsService implements UserDetailsService {
         myUserDetails.setUserId(userId);
         myUserDetails.setUsername(user.getUsername());
         myUserDetails.setPassword(user.getPassword());
+        myUserDetails.setRoleId(role.getRoleId());
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleCode()));
         myUserDetails.setAuthorities(authorities);
         return myUserDetails;

@@ -26,7 +26,6 @@ public class CreatorEntity implements Serializable {
     @TableId("user_id")
     private String userId; // 用户编号
     private String username; // 用户名
-    private String avatar; // 头像地址
     private String phoneCountryCode; // 手机号国家代码
     private String phoneNumber; // 手机号
     private String phoneFull; // phoneCountryCode + phoneNumber

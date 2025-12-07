@@ -14,19 +14,20 @@ import com.ghml.feiniao.common.entity.FavoriteEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.BrandMapper;
 import com.ghml.feiniao.common.service.RedisService;
+import com.ghml.feiniao.common.vo.AvatarVo;
 import com.ghml.feiniao.common.vo.BrandVo;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.config.MinIOProps;
-import com.ghml.feiniao.users.service.BrandService;
-import com.ghml.feiniao.users.service.CreatorService;
-import com.ghml.feiniao.users.service.FavoriteService;
+import com.ghml.feiniao.users.service.*;
 import com.ghml.feiniao.users.utils.MinIOUtils;
 import io.minio.MinioClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> implements BrandService {
 
     private final MinioClient minioClient;
@@ -45,18 +47,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     private final FavoriteService favoriteService;
     private final RedisService redisService;
     private final MinIOProps minIOProps;
-
-    public BrandServiceImpl(MinioClient minioClient,
-                            CreatorService creatorService,
-                            FavoriteService favoriteService,
-                            RedisService redisService,
-                            MinIOProps minIOProps) {
-        this.minioClient = minioClient;
-        this.creatorService = creatorService;
-        this.favoriteService = favoriteService;
-        this.redisService = redisService;
-        this.minIOProps = minIOProps;
-    }
+    private final MenuService menuService;
 
     // 根据编号查询产品主信息
     @Override
@@ -65,12 +56,16 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
         if (opt.isEmpty()) {
             throw new ServiceException(Code.USER_NOT_EXIST);
         }
-        BrandEntity entity = opt.get();
+
+        // 获取头像外链
+        AvatarVo avatar = getAvatarUrl();
+
+        BrandEntity brandEntity = opt.get();
         return BrandVo.builder()
                 .userId(SecurityUtils.getCurrentUserId())
-                .username(entity.getUsername())
-                .phone(entity.getPhoneNumber())
-                .avatar(entity.getAvatar())
+                .username(brandEntity.getUsername())
+                .phone(brandEntity.getPhoneNumber())
+                .avatar(avatar)
                 .build();
     }
 
@@ -136,12 +131,12 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
      * @return minio外链
      */
     @Override
-    public String uploadAvatar(MultipartFile file) {
+    public AvatarVo uploadAvatar(MultipartFile file) {
         String currentUserId = SecurityUtils.getCurrentUserId();
-        String filename = currentUserId + "." + StringUtils.substringAfter(file.getOriginalFilename(), ".");
         try {
-            String object = MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), filename);
-            return getAvatarUrl(object);
+            // 上传头像到minio
+            MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), currentUserId);
+            return getAvatarUrl();
         } catch (Exception e) {
             log.error("OSS文件上传失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
@@ -150,16 +145,31 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
 
     // 获取头像外链
     @Override
-    public String getAvatarUrl(String filename) {
+    public AvatarVo getAvatarUrl() {
         // 校验filename和用户是否一致
-        String currentUserId = SecurityUtils.getCurrentUserId();
-        if (!StringUtils.startsWith(filename, currentUserId)) {
-            throw new ServiceException(Code.OSS_NOT_EXIST);
-        }
+        String filename = SecurityUtils.getCurrentUserId();
         try {
-            return MinIOUtils.getObjectUrl(minioClient, Bucket.AVATARS.getName(), filename, minIOProps.getAvatarExpiry());
+            int expiryHours = minIOProps.getAvatarExpiry();
+
+            // 获取外链
+            String avatar = MinIOUtils.getObjectUrl(
+                    minioClient,
+                    Bucket.AVATARS.getName(),
+                    filename,
+                    expiryHours
+            );
+
+            // 计算失效时间
+            long generateAt = System.currentTimeMillis();
+            long expiryMillis = expiryHours * 3600L * 1000L;
+            long expiry = generateAt + expiryMillis;
+
+            return AvatarVo.builder()
+                    .avatar(avatar)
+                    .expiry(expiry)
+                    .build();
         } catch (Exception e) {
-            log.error("OSS外链获取失败:{}", e.getMessage());
+            log.error("OSS外链获取失败: {}", e.getMessage(), e);
             throw new ServiceException(Code.OSS_ERROR);
         }
     }
