@@ -18,5 +18,5 @@ public class RedisPrefix {
     public static final String PREFIX_WEB_REFRESH_TOKEN = "web:refresh:token:";
 
     // 短信验证码
-    public static final String PREFIX_PHONE_VERIFIED_CODE = "phone:verified:%s:code:%s";
+    public static final String PREFIX_PHONE_VERIFIED_CODE = "phone:verified:code:";
 }

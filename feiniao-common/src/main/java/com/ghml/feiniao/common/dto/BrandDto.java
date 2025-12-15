@@ -1,6 +1,8 @@
 package com.ghml.feiniao.common.dto;
 
 import com.ghml.feiniao.common.annos.ValidPhoneNumberGroup;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 /**
@@ -12,10 +14,18 @@ import lombok.Data;
 @Data
 @ValidPhoneNumberGroup
 public class BrandDto {
+
+    @NotBlank(message = "用户名不能为空")
+    @Pattern(regexp = "^[a-zA-Z0-9_]{4,20}$", message = "用户名必须是4-20位字母、数字或下划线")
     private String username;
-    private String phoneCountryCode;
+
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     private String phoneNumber;
-    private String phoneFull;
+
+    @Pattern(regexp = "^\\d{6}$", message = "验证码必须是6位数字")
     private String verifiedCode;
-    private Integer phoneVerified;
+
+    private String phoneCountryCode;
+
+    private String phoneFull;
 }

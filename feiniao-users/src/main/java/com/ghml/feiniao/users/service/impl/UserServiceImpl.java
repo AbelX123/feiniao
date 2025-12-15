@@ -94,6 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 throw new ServiceException(Code.OPERATION_FAILED);
             }
         });
+        log.info("用户[{}]注册成功!", userDto.getUsername());
     }
 
     // 公共登录
@@ -122,6 +123,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         redisService.setExpMillis(RedisPrefix.PREFIX_WEB_TOKEN + myUserDetails.getUserId(), accessToken, JwtUtils.getExpiration(accessToken));
         redisService.setExpMillis(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + myUserDetails.getUserId(), refreshToken, JwtUtils.getExpiration(refreshToken));
 
+        log.info("用户[{}]登录成功!", userDto.getUsername());
+
         return vo;
     }
 
@@ -129,14 +132,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Override
     public UserVo refreshToken(String refreshToken) {
         // 验证token是否
-        String userId;
-        try {
-            Claims claims = JwtUtils.parseToken(refreshToken);
-            userId = claims.getSubject();
-        } catch (Exception e) {
-            log.warn("refresh-token解析失败");
-            throw new ServiceException(Code.TOKEN_INVALID);
-        }
+        String userId = SecurityUtils.getCurrentUserId();
+        log.info("用户[{}]请求更新令牌!", userId);
         // 缓存验证
         String refreshTokenInCache = (String) redisService.get(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + userId);
         if (!StringUtils.equals(refreshToken, refreshTokenInCache)) {
@@ -153,15 +150,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         UserVo vo = new UserVo();
         vo.setAccessToken(newAccessToken);
         vo.setRefreshToken(newRefreshToken);
+        log.info("用户[{}]请求更新令牌成功!", userId);
 
         return vo;
     }
 
     // 退出登录
     @Override
-    public void logout() {
+    public void signOut() {
         String currentUserId = SecurityUtils.getCurrentUserId();
         redisService.delete(RedisPrefix.PREFIX_WEB_TOKEN + currentUserId);
         redisService.delete(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + currentUserId);
+        log.info("用户[{}]退出登录!", SecurityUtils.getCurrentUsername());
     }
 }

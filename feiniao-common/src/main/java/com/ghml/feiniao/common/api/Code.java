@@ -29,6 +29,7 @@ public enum Code {
     TOKEN_EXPIRED("1003", "令牌已过期"),
     TOKEN_INVALID("1004", "令牌无效"),
     VERIFIED_CODE_EXPIRED("1005", "验证码已过期"),
+    VERIFIED_CODE_FAILED("1005", "验证码错误"),
 
     // 模糊错误
     FAILED("9999", "系统错误"),

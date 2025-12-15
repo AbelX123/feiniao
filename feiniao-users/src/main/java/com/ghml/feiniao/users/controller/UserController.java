@@ -7,6 +7,7 @@ import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.UserVo;
 import com.ghml.feiniao.users.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -15,15 +16,12 @@ import org.springframework.web.bind.annotation.*;
  * @date 2025-11-02 10:41
  * @description
  */
-@RequestMapping("/api/users")
 @RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     // 注册公共接口
     @PostMapping("/signUp")
@@ -59,10 +57,10 @@ public class UserController {
     }
 
     // 退出登录
-    @DeleteMapping("/logout")
-    public R<?> logout() {
+    @DeleteMapping("/signOut")
+    public R<?> signOut() {
         try {
-            userService.logout();
+            userService.signOut();
             return R.ok();
         } catch (ServiceException e) {
             return R.failed(e.getCode());

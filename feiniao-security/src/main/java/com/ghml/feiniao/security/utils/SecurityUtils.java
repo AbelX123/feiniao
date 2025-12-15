@@ -6,8 +6,6 @@ import com.ghml.feiniao.security.config.MyUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
-
 /**
  * @author YUHUAI
  * @version 1.0
@@ -26,12 +24,14 @@ public class SecurityUtils {
         throw new ServiceException(Code.USER_NOT_EXIST);
     }
 
-    // 安全获取用户ID（避免异常）
-    public static Optional<String> getCurrentUserIdOptional() {
-        try {
-            return Optional.ofNullable(getCurrentUserId());
-        } catch (Exception e) {
-            return Optional.empty();
+    public static String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof MyUserDetails userDetails) {
+            return userDetails.getUsername();
         }
+
+        throw new ServiceException(Code.USER_NOT_EXIST);
     }
+
 }

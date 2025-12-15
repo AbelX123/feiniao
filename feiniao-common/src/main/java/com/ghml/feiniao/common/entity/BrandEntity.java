@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author YUHUAI
@@ -28,7 +28,7 @@ public class BrandEntity implements Serializable {
     private String phoneNumber;
     private String phoneFull;
     private Integer phoneVerified;
-    private Date verifiedAt;
-    private Date createTime;
-    private Date updateTime;
+    private LocalDateTime verifiedAt;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

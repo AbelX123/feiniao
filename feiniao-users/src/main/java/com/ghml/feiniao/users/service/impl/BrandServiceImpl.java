@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.constants.Bucket;
-import com.ghml.feiniao.common.constants.PhoneStatus;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.dto.BrandDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
@@ -27,8 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -47,7 +45,6 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     private final FavoriteService favoriteService;
     private final RedisService redisService;
     private final MinIOProps minIOProps;
-    private final MenuService menuService;
 
     // 根据编号查询产品主信息
     @Override
@@ -127,6 +124,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
 
     /**
      * 头像上传
+     *
      * @param file
      * @return minio外链
      */
@@ -136,6 +134,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
         try {
             // 上传头像到minio
             MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), currentUserId);
+            log.info("用户[{}]更新头像成功!", SecurityUtils.getCurrentUsername());
             return getAvatarUrl();
         } catch (Exception e) {
             log.error("OSS文件上传失败:{}", e.getMessage());
@@ -182,38 +181,81 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     // 部分更新产品主信息
     @Override
     public BrandVo patchBrand(BrandDto dto) {
-        // 获取userId
+        // 获取当前用户ID
         String brandId = SecurityUtils.getCurrentUserId();
 
-        BrandEntity entity = new BrandEntity();
+        // 查询现有用户信息
+        BrandEntity existingBrand = this.getById(brandId);
+
+        if (existingBrand == null) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+
+        // 构建更新实体
+        BrandEntity updateEntity = new BrandEntity();
+        updateEntity.setUserId(brandId);
+
+        boolean needUpdate = createUpdateEntity(updateEntity, existingBrand, dto);
+        if (needUpdate) {
+            this.updateById(updateEntity);
+        }
+        return getBasicInfo(brandId);
+    }
+
+    private BrandVo getBasicInfo(String brandId) {
+        BrandEntity entity = this.getById(brandId);
+        if (entity == null) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        return BrandVo.builder()
+                .username(entity.getUsername())
+                .phone(entity.getPhoneNumber())
+                .build();
+    }
+
+    /**
+     * 构建更新实体
+     *
+     * @param updateEntity 更新实体
+     * @param dto          参数
+     * @return 是否需要更新
+     */
+    private boolean createUpdateEntity(BrandEntity updateEntity, BrandEntity existingBrand, BrandDto dto) {
+        boolean needUpdate = false;
         // 如果存在手机号更新，验证验证码状态
-        if (!dto.getPhoneFull().isEmpty()) {
-            String key = String.format(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE, dto.getPhoneFull(), brandId);
-            String codeInCache = (String) redisService.get(key);
-            if (StringUtils.isEmpty(codeInCache) || !StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
-                throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
-            } else {
-                // 验证完成让验证码失效
-                Boolean delete = redisService.delete(key);
-                if (!delete) {
-                    throw new ServiceException(Code.OPERATION_FAILED);
+        if (!StringUtils.isEmpty(updateEntity.getPhoneNumber())) {
+            if (!StringUtils.equals(dto.getPhoneNumber(), existingBrand.getPhoneNumber())) {
+                String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + existingBrand.getUserId();
+                String codeInCache = (String) redisService.get(key);
+                if (StringUtils.isEmpty(codeInCache)) {
+                    throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
                 }
+                if (!StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
+                    throw new ServiceException(Code.VERIFIED_CODE_FAILED);
+                }
+                // 手机号相关信息
+                updateEntity.setPhoneNumber(dto.getPhoneNumber());
+                updateEntity.setVerifiedAt(LocalDateTime.now());
+                updateEntity.setPhoneVerified(1);
+                needUpdate = true;
             }
-            entity.setPhoneCountryCode(dto.getPhoneCountryCode());
-            entity.setPhoneNumber(dto.getPhoneNumber());
-            entity.setPhoneFull(dto.getPhoneFull());
-            entity.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
-            entity.setVerifiedAt(new Date());
         }
-        entity.setUserId(brandId);
-        if (StringUtils.isNotBlank(dto.getUsername())) {
-            entity.setUsername(dto.getUsername());
+        // 其余信息
+        if (StringUtils.isNotBlank(dto.getUsername()) && !StringUtils.equals(dto.getUsername(), existingBrand.getUsername())) {
+            // 检查用户名是否已存在（排除当前用户自己）
+            LambdaQueryWrapper<BrandEntity> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(BrandEntity::getUsername, dto.getUsername())
+                    .ne(BrandEntity::getUserId, existingBrand.getUserId()); // 排除自己
+
+            Long count = this.baseMapper.selectCount(queryWrapper);
+            if (count > 0) {
+                throw new ServiceException(Code.USER_EXIST);
+            }
+            updateEntity.setUsername(dto.getUsername());
+            needUpdate = true;
         }
-        boolean update = this.updateById(entity);
-        if (!update) {
-            throw new ServiceException(Code.OPERATION_FAILED);
-        }
-        return getBrandById();
+
+        return needUpdate;
     }
 
 }
