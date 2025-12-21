@@ -5,7 +5,7 @@ import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorVo;
+import com.ghml.feiniao.common.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,25 +17,26 @@ import java.util.List;
  * @description
  */
 public interface CreatorService extends IService<CreatorEntity> {
-    PageResult<CreatorVo> selectCreatorsByConditions(CreatorsDto creatorDto);
 
-    CreatorVo getCreatorById(String creatorId);
+    PageResult<CreatorDisplayVo> selectCreatorsByConditions(CreatorsDto creatorDto);
 
-    PageResult<CreatorVo> favoriteCreators(CreatorsDto creatorsDto);
+    CreatorDetailsVo getCreatorById(String creatorId);
+
+    PageResult<CreatorDisplayVo> favoriteCreators(CreatorsDto creatorsDto);
 
     String uploadVideo(MultipartFile video);
 
     void register(CreatorEntity creator);
 
-    List<String> getModelTypesById(String creatorId);
+    List<ModelTypeVo> getModelTypesById(String creatorId);
 
-    List<String> getPlatforms(String creatorId);
+    List<PlatformVo> getPlatforms(String creatorId);
 
-    List<String> getSpecialties(String creatorId);
+    List<SpecialtyVo> getSpecialties(String creatorId);
 
-    List<String> getTags(String creatorId);
+    List<TagVo> getTags(String creatorId);
 
-    List<CreatorVo.CaseVo> getCaseVos(String creatorId);
+    List<CaseVo> getCaseVos(String creatorId);
 
-    CreatorVo patchCreator(CreatorDto dto);
+    CreatorDetailsVo patchCreator(CreatorDto dto);
 }

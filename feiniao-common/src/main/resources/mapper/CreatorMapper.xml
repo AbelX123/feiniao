@@ -6,9 +6,11 @@
         SELECT DISTINCT
         cp.user_id,
         cp.username,
+        cp.cover_url,
         cp.gender,
         cp.video_price,
         cp.country_code,
+        cp.is_available,
         ar.age_range_desc,
         c.country_name
         FROM creator_profiles cp

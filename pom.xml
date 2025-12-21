@@ -42,6 +42,7 @@
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
         <mybatis.spring>3.0.3</mybatis.spring>
         <fastjson2.version>2.0.49</fastjson2.version>
+        <jackson.version>2.15.2</jackson.version>
         <jjwt.version>0.12.6</jjwt.version>
         <mysql.version>8.0.28</mysql.version>
         <minio.version>8.5.17</minio.version>
@@ -121,6 +122,16 @@
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2-extension-spring5</artifactId>
                 <version>${fastjson2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <!-- jwt工具包 -->
             <dependency>

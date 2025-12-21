@@ -31,6 +31,8 @@ public enum Code {
     VERIFIED_CODE_EXPIRED("1005", "验证码已过期"),
     VERIFIED_CODE_FAILED("1005", "验证码错误"),
 
+    // 创作者相关错误码
+    CREATOR_NOT_EXIST("2000", "创作者不存在"),
     // 模糊错误
     FAILED("9999", "系统错误"),
     OPERATION_FAILED("9001", "操作失败，请稍后重试"),

@@ -15,7 +15,7 @@ import com.ghml.feiniao.common.mapper.CreatorMapper;
 import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.utils.EntityUpdateHelper;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorVo;
+import com.ghml.feiniao.common.vo.*;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.*;
 import com.ghml.feiniao.users.utils.MinIOUtils;
@@ -65,50 +65,89 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
 
     // 多条件分页查询创作者
     @Override
-    public PageResult<CreatorVo> selectCreatorsByConditions(CreatorsDto query) {
+    public PageResult<CreatorDisplayVo> selectCreatorsByConditions(CreatorsDto query) {
         // 创建分页对象
         Page<CreatorEntity> page = Page.of(query.getPageNum(), query.getPageSize());
         // 执行查询
         Page<CreatorEntity> result = creatorMapper.selectCreatorsByConditions(page, query);
         // 将entity转换为vo
-        List<CreatorVo> vos = convertToVoList(result.getRecords());
+        List<CreatorDisplayVo> vos = convertToVoList(result.getRecords());
         // 构建返回结果
-        return PageResult.<CreatorVo>builder().records(vos).total(result.getTotal()).current(result.getCurrent()).size(result.getSize()).pages(result.getPages()).build();
+        return PageResult.<CreatorDisplayVo>builder()
+                .records(vos)
+                .total(result.getTotal())
+                .current(result.getCurrent())
+                .size(result.getSize())
+                .pages(result.getPages())
+                .build();
     }
 
     // 查询创作者类别
     @Override
-    public List<String> getModelTypesById(String creatorId) {
-        return creatorMapper.getModelTypesById(creatorId);
+    public List<ModelTypeVo> getModelTypesById(String creatorId) {
+        List<ModelTypeEntity> modelTypes = creatorMapper.getModelTypesById(creatorId);
+        return modelTypes.stream()
+                .map(type -> ModelTypeVo.builder()
+                        .modelTypeId(type.getModelTypeId())
+                        .modelTypeName(type.getModelTypeName())
+                        .build())
+                .toList();
     }
 
     // 查询创作者平台
     @Override
-    public List<String> getPlatforms(String creatorId) {
-        return creatorMapper.getPlatforms(creatorId);
+    public List<PlatformVo> getPlatforms(String creatorId) {
+        List<PlatformEntity> platforms = creatorMapper.getPlatforms(creatorId);
+        return platforms.stream()
+                .map(platform -> PlatformVo.builder()
+                        .platformCode(platform.getPlatformCode())
+                        .platformName(platform.getPlatformName())
+                        .build())
+                .toList();
     }
 
     // 查询擅长品类
     @Override
-    public List<String> getSpecialties(String creatorId) {
-        return creatorMapper.getSpecialties(creatorId);
+    public List<SpecialtyVo> getSpecialties(String creatorId) {
+        List<SpecialtyEntity> specialties = creatorMapper.getSpecialties(creatorId);
+        return specialties.stream()
+                .map(specialty -> SpecialtyVo.builder()
+                        .specialtyId(specialty.getSpecialtyId())
+                        .specialtyName(specialty.getSpecialtyName())
+                        .build())
+                .toList();
     }
 
     // 查询模特标签
     @Override
-    public List<String> getTags(String creatorId) {
-        return creatorMapper.getTags(creatorId);
+    public List<TagVo> getTags(String creatorId) {
+        List<TagEntity> tags = creatorMapper.getTags(creatorId);
+        return tags.stream()
+                .map(tag -> TagVo.builder()
+                        .tagId(tag.getTagId())
+                        .tagName(tag.getTagName())
+                        .build()).toList();
     }
 
     // 查询案例
     @Override
-    public List<CreatorVo.CaseVo> getCaseVos(String creatorId) {
-        return creatorMapper.getCaseVos(creatorId);
+    public List<CaseVo> getCaseVos(String creatorId) {
+        List<CaseEntity> cases = creatorMapper.getCaseVos(creatorId);
+        return cases.stream()
+                .map(caseEntity -> CaseVo.builder()
+                        .caseId(caseEntity.getCaseId())
+                        .caseTitle(caseEntity.getCaseTitle())
+                        .coverUrl(caseEntity.getCoverUrl())
+                        .videoUrl(caseEntity.getVideoUrl())
+                        .status(caseEntity.getStatus())
+                        .createTime(caseEntity.getCreateTime())
+                        .build())
+                .toList();
     }
 
     // 更新创作者信息
     @Override
-    public CreatorVo patchCreator(CreatorDto dto) {
+    public CreatorDetailsVo patchCreator(CreatorDto dto) {
         // 获取当前用户id
         final String creatorId = SecurityUtils.getCurrentUserId();
 
@@ -116,7 +155,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         CreatorEntity entity = new CreatorEntity();
         // 如果存在手机号更新，验证验证码状态
         if (!dto.getPhoneFull().isEmpty()) {
-            String key = String.format(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE, dto.getPhoneFull(), creatorId);
+            String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + dto.getPhoneFull();
             String codeInCache = (String) redisService.get(key);
             if (StringUtils.isEmpty(codeInCache) || !StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
                 throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
@@ -217,29 +256,43 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
 
     // 查询创作者详情
     @Override
-    public CreatorVo getCreatorById(String creatorId) {
+    public CreatorDetailsVo getCreatorById(String creatorId) {
         Optional<CreatorEntity> opt = creatorMapper.getOptByCreatorId(creatorId);
         if (opt.isEmpty()) {
-            throw new ServiceException(Code.USER_NOT_EXIST);
+            throw new ServiceException(Code.CREATOR_NOT_EXIST);
         }
         CreatorEntity entity = opt.get();
         // 查询类别
-        List<String> types = this.getModelTypesById(creatorId);
+        List<ModelTypeVo> types = this.getModelTypesById(creatorId);
         // 查询平台
-        List<String> platforms = this.getPlatforms(creatorId);
+        List<PlatformVo> platforms = this.getPlatforms(creatorId);
         // 查询擅长品类
-        List<String> specialties = this.getSpecialties(creatorId);
+        List<SpecialtyVo> specialties = this.getSpecialties(creatorId);
         // 查询模特标签
-        List<String> tags = this.getTags(creatorId);
+        List<TagVo> tags = this.getTags(creatorId);
         // 查询案例
-        List<CreatorVo.CaseVo> caseVos = this.getCaseVos(creatorId);
+        List<CaseVo> caseVos = this.getCaseVos(creatorId);
         // 构建vo
-        return CreatorVo.builder().userId(creatorId).username(entity.getUsername()).countryName(entity.getCountryName()).gender(Gender.getDescByCode(entity.getGender())).modelTypes(types).platforms(platforms).specialties(specialties).tags(tags).caseVos(caseVos).build();
+        return CreatorDetailsVo.builder()
+                .userId(creatorId)
+                .username(entity.getUsername())
+                .videoPrice(entity.getVideoPrice())
+                .gender(Gender.getDescByCode(entity.getGender()))
+                .ageRangeDesc(entity.getAgeRangeDesc())
+                .isAvailable(entity.getIsAvailable())
+                .countryName(entity.getCountryName())
+                .coverUrl(entity.getCoverUrl())
+                .modelTypes(types.stream().map(ModelTypeVo::getModelTypeName).toList())
+                .platforms(platforms.stream().map(PlatformVo::getPlatformName).toList())
+                .specialties(specialties.stream().map(SpecialtyVo::getSpecialtyName).toList())
+                .tags(tags.stream().map(TagVo::getTagName).toList())
+                .caseVos(caseVos)
+                .build();
     }
 
     // 通过产品主编号分页获取收藏的创作者
     @Override
-    public PageResult<CreatorVo> favoriteCreators(CreatorsDto dto) {
+    public PageResult<CreatorDisplayVo> favoriteCreators(CreatorsDto dto) {
         // 获取产品主编号
         String brandId = SecurityUtils.getCurrentUserId();
         // 创建分页对象
@@ -247,9 +300,25 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         // 执行查询
         Page<CreatorEntity> result = creatorMapper.favoriteCreators(page, brandId);
         // 转换每个entity为vo
-        List<CreatorVo> vos = result.getRecords().stream().map(entity -> CreatorVo.builder().userId(entity.getUserId()).username(entity.getUsername()).videoPrice(entity.getVideoPrice()).countryName(entity.getCountryName()).gender(Gender.getDescByCode(entity.getGender())).ageRange(entity.getAgeRangeDesc()).build()).toList();
+        List<CreatorDisplayVo> vos = result.getRecords()
+                .stream()
+                .map(entity -> CreatorDisplayVo.builder()
+                        .userId(entity.getUserId())
+                        .username(entity.getUsername())
+                        .videoPrice(entity.getVideoPrice())
+                        .countryName(entity.getCountryName())
+                        .gender(Gender.getDescByCode(entity.getGender()))
+                        .ageRangeDesc(entity.getAgeRangeDesc())
+                        .build())
+                .collect(Collectors.toList());
         // 构建返回结果
-        return PageResult.<CreatorVo>builder().records(vos).total(result.getTotal()).current(result.getCurrent()).size(result.getSize()).pages(result.getPages()).build();
+        return PageResult.<CreatorDisplayVo>builder()
+                .records(vos)
+                .total(result.getTotal())
+                .current(result.getCurrent())
+                .size(result.getSize())
+                .pages(result.getPages())
+                .build();
     }
 
     // 上传视频到OSS
@@ -271,11 +340,22 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
     }
 
     // 将Entity列表转换为VO列表
-    private List<CreatorVo> convertToVoList(List<CreatorEntity> entities) {
+    private List<CreatorDisplayVo> convertToVoList(List<CreatorEntity> entities) {
         if (CollectionUtils.isEmpty(entities)) {
             return new ArrayList<>();
         }
         // 转换每个Entity为VO
-        return entities.stream().map(entity -> CreatorVo.builder().userId(entity.getUserId()).username(entity.getUsername()).videoPrice(entity.getVideoPrice()).countryCode(entity.getCountryCode()).gender(Gender.getDescByCode(entity.getGender())).ageRange(entity.getAgeRange()).countryName(entity.getCountryName()).build()).collect(Collectors.toList());
+        return entities.stream()
+                .map(entity -> CreatorDisplayVo.builder()
+                        .userId(entity.getUserId()) // 模特编号
+                        .username(entity.getUsername()) // 模特名称
+                        .coverUrl(entity.getCoverUrl()) // 模特展示照片
+                        .videoPrice(entity.getVideoPrice()) // 拍摄价格
+                        .gender(Gender.getDescByCode(entity.getGender())) // 性别
+                        .countryName(entity.getCountryName()) // 国家名称
+                        .ageRangeDesc(entity.getAgeRangeDesc()) // 年龄范围
+                        .isAvailable(entity.getIsAvailable())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

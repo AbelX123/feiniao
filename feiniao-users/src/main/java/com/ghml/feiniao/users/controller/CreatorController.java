@@ -5,10 +5,13 @@ import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.CreatorVo;
+import com.ghml.feiniao.common.vo.*;
 import com.ghml.feiniao.users.service.CreatorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @author YUHUAI
@@ -18,19 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/users/creators")
+@RequiredArgsConstructor
 public class CreatorController {
 
     private final CreatorService creatorService;
 
-    public CreatorController(CreatorService creatorService) {
-        this.creatorService = creatorService;
-    }
-
     // 分页获取创作者列表
     @PostMapping
-    public R<PageResult<CreatorVo>> getCreators(@RequestBody CreatorsDto creatorsDto) {
+    public R<PageResult<CreatorDisplayVo>> getCreators(@RequestBody CreatorsDto creatorsDto) {
         try {
-            PageResult<CreatorVo> vo = creatorService.selectCreatorsByConditions(creatorsDto);
+            PageResult<CreatorDisplayVo> vo = creatorService.selectCreatorsByConditions(creatorsDto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
@@ -39,10 +39,65 @@ public class CreatorController {
 
     // 获取创作者详情信息
     @GetMapping("/{creatorId}")
-    public R<CreatorVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
+    public R<CreatorDetailsVo> getCreatorById(@PathVariable("creatorId") String creatorId) {
         try {
-            CreatorVo vo = creatorService.getCreatorById(creatorId);
+            CreatorDetailsVo vo = creatorService.getCreatorById(creatorId);
             return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者类别
+    @GetMapping("/{creatorId}/types")
+    public R<List<ModelTypeVo>> getModelTypesById(@PathVariable("creatorId") String creatorId) {
+        try {
+            List<ModelTypeVo> vos = creatorService.getModelTypesById(creatorId);
+            return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者平台
+    @GetMapping("/{creatorId}/platforms")
+    public R<List<PlatformVo>> getPlatforms(@PathVariable("creatorId") String creatorId) {
+        try {
+            List<PlatformVo> vos = creatorService.getPlatforms(creatorId);
+            return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者品类
+    @GetMapping("/{creatorId}/specialties")
+    public R<List<SpecialtyVo>> getSpecialties(@PathVariable("creatorId") String creatorId) {
+        try {
+            List<SpecialtyVo> vos = creatorService.getSpecialties(creatorId);
+            return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者模特标签
+    @GetMapping("/{creatorId}/tags")
+    public R<List<TagVo>> getTags(@PathVariable("creatorId") String creatorId) {
+        try {
+            List<TagVo> vos = creatorService.getTags(creatorId);
+            return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者案例
+    @GetMapping("/{creatorId}/cases")
+    public R<List<CaseVo>> getCases(@PathVariable("creatorId") String creatorId) {
+        try {
+            List<CaseVo> vos = creatorService.getCaseVos(creatorId);
+            return R.ok(vos);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }
@@ -50,9 +105,9 @@ public class CreatorController {
 
     // 更新创作者详情信息
     @PatchMapping
-    public R<CreatorVo> patchCreator(@RequestBody CreatorDto dto) {
+    public R<CreatorDetailsVo> patchCreator(@RequestBody CreatorDto dto) {
         try {
-            CreatorVo vo = creatorService.patchCreator(dto);
+            CreatorDetailsVo vo = creatorService.patchCreator(dto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
@@ -61,9 +116,9 @@ public class CreatorController {
 
     // 通过产品主编号分页获取收藏的创作者
     @GetMapping("/favorite-creators")
-    public R<PageResult<CreatorVo>> favoriteCreators(@RequestBody CreatorsDto dto) {
+    public R<PageResult<CreatorDisplayVo>> favoriteCreators(@RequestBody CreatorsDto dto) {
         try {
-            PageResult<CreatorVo> vos = creatorService.favoriteCreators(dto);
+            PageResult<CreatorDisplayVo> vos = creatorService.favoriteCreators(dto);
             return R.ok(vos);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
