@@ -22,7 +22,8 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
 
     // 多条件分页查询创作者
     Page<CreatorEntity> selectCreatorsByConditions(@Param("page") Page<CreatorEntity> page,
-                                                   @Param("query") CreatorsDto query);
+                                                   @Param("query") CreatorsDto query,
+                                                   @Param("userId") String userId);
 
     // 依据用户编号查询用户信息，country_code->country_name
     @Select("SELECT cp.user_id,  " +

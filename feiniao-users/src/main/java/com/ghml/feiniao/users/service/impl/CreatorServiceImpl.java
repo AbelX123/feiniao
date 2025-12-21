@@ -66,10 +66,12 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
     // 多条件分页查询创作者
     @Override
     public PageResult<CreatorDisplayVo> selectCreatorsByConditions(CreatorsDto query) {
+        // 获取当前用户
+        String currentUserId = SecurityUtils.getCurrentUserId();
         // 创建分页对象
         Page<CreatorEntity> page = Page.of(query.getPageNum(), query.getPageSize());
         // 执行查询
-        Page<CreatorEntity> result = creatorMapper.selectCreatorsByConditions(page, query);
+        Page<CreatorEntity> result = creatorMapper.selectCreatorsByConditions(page, query, currentUserId);
         // 将entity转换为vo
         List<CreatorDisplayVo> vos = convertToVoList(result.getRecords());
         // 构建返回结果
@@ -354,7 +356,8 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                         .gender(Gender.getDescByCode(entity.getGender())) // 性别
                         .countryName(entity.getCountryName()) // 国家名称
                         .ageRangeDesc(entity.getAgeRangeDesc()) // 年龄范围
-                        .isAvailable(entity.getIsAvailable())
+                        .isAvailable(entity.getIsAvailable()) // 是否接单
+                        .isFavorite(entity.getIsFavorite()) // 是否被收藏
                         .build())
                 .collect(Collectors.toList());
     }

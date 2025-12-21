@@ -26,4 +26,5 @@ public class CreatorDisplayVo {
     private Integer isAvailable; //是否接单
     private String countryName; // 关联的国家名
     private String coverUrl; // 展示图
+    private Integer isFavorite; // 是否被收藏
 }

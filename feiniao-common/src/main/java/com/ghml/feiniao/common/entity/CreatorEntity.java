@@ -42,4 +42,6 @@ public class CreatorEntity implements Serializable {
     private String countryName; // 关联的country_name
     @TableField(exist = false)
     private String ageRangeDesc; // 关联的年龄范围
+    @TableField(exist = false)
+    private Integer isFavorite; // 是否被收藏
 }

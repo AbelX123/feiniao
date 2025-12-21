@@ -12,7 +12,9 @@
         cp.country_code,
         cp.is_available,
         ar.age_range_desc,
-        c.country_name
+        c.country_name,
+        <!-- 添加收藏标志 -->
+        IF(bfc.creator_id IS NOT NULL, 1, 0) AS is_favorite
         FROM creator_profiles cp
         LEFT JOIN creator_platform_mapping cpm ON cp.user_id = cpm.creator_id
         LEFT JOIN country c ON cp.country_code = c.country_code
@@ -20,6 +22,9 @@
         LEFT JOIN creator_type_mapping ctm ON cp.user_id = ctm.creator_id
         LEFT JOIN creator_tag_mapping m ON cp.user_id = m.creator_id
         LEFT JOIN creator_specialty_mapping csm ON cp.user_id = csm.creator_id
+        <!-- 关联收藏表 - 根据特定品牌主查询 -->
+        LEFT JOIN brand_favorite_creators bfc ON cp.user_id = bfc.creator_id
+        AND bfc.brand_id = #{userId}
         WHERE 1=1
         <!-- 平台编码筛选 -->
         <if test="query.platformCodes != null and query.platformCodes.size() > 0">
