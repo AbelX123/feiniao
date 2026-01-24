@@ -41,13 +41,29 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
     Optional<CreatorEntity> getOptByCreatorId(String creatorId);
 
     // 根据产品主编号获取收藏的创作者列表
-    @Select("SELECT bcm.brand_id, cp.username, cp.video_price, c.country_name, cp.gender, ar.age_range_desc " +
-            "FROM brand_favorite_creators bcm " +
-            "         INNER JOIN creator_profiles cp ON bcm.creator_id = cp.user_id " +
-            "         LEFT JOIN country c ON c.country_code = cp.country_code " +
-            "         LEFT JOIN age_range ar ON ar.age_range = cp.age_range " +
-            "WHERE bcm.brand_id = #{brandId} " +
-            "ORDER BY bcm.brand_id")
+    @Select("""
+            SELECT bfc.creator_id as user_id,
+            	cp.username,
+            	cp.cover_url,
+            	cp.gender,
+            	cp.video_price,
+            	cp.country_code,
+            	cp.is_available,
+            	ar.age_range_desc,
+            	c.country_name,
+            	1 AS is_favorite
+            FROM
+            	brand_favorite_creators bfc
+            INNER JOIN creator_profiles cp ON
+            	bfc.creator_id = cp.user_id
+            LEFT JOIN country c ON
+            	c.country_code = cp.country_code
+            LEFT JOIN age_range ar ON
+            	ar.age_range = cp.age_range
+            WHERE
+            	bfc.brand_id = #{brandId}
+            ORDER BY
+            	bfc.brand_id""")
     Page<CreatorEntity> favoriteCreators(Page<CreatorEntity> page, String brandId);
 
     // 依据用户编号查询模特类别

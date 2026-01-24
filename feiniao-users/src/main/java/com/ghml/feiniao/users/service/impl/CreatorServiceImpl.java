@@ -301,18 +301,8 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         Page<CreatorEntity> page = Page.of(dto.getPageNum(), dto.getPageSize());
         // 执行查询
         Page<CreatorEntity> result = creatorMapper.favoriteCreators(page, brandId);
-        // 转换每个entity为vo
-        List<CreatorDisplayVo> vos = result.getRecords()
-                .stream()
-                .map(entity -> CreatorDisplayVo.builder()
-                        .userId(entity.getUserId())
-                        .username(entity.getUsername())
-                        .videoPrice(entity.getVideoPrice())
-                        .countryName(entity.getCountryName())
-                        .gender(Gender.getDescByCode(entity.getGender()))
-                        .ageRangeDesc(entity.getAgeRangeDesc())
-                        .build())
-                .collect(Collectors.toList());
+        // 将entity转换为vo
+        List<CreatorDisplayVo> vos = convertToVoList(result.getRecords());
         // 构建返回结果
         return PageResult.<CreatorDisplayVo>builder()
                 .records(vos)

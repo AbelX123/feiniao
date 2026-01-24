@@ -59,7 +59,7 @@ public class InMybatisUserDetailsService implements UserDetailsService {
         // 查询用户
         UserEntity user = userMapper.selectById(userId);
         if (Objects.isNull(user)) {
-            throw new ServiceException(Code.USER_PASSWORD_NOT_MATCH);
+            throw new ServiceException(Code.USER_NOT_EXIST);
         }
         // 查询权限(查询角色，用户和角色是一对一关系)
         RoleEntity role = roleMapper.selectById(user.getRoleId());

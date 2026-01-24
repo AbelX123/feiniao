@@ -115,7 +115,7 @@ public class CreatorController {
     }
 
     // 通过产品主编号分页获取收藏的创作者
-    @GetMapping("/favorite-creators")
+    @PostMapping("/favorite-creators")
     public R<PageResult<CreatorDisplayVo>> favoriteCreators(@RequestBody CreatorsDto dto) {
         try {
             PageResult<CreatorDisplayVo> vos = creatorService.favoriteCreators(dto);
