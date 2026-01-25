@@ -3,7 +3,6 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
-import com.ghml.feiniao.common.constants.Bucket;
 import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.constants.PhoneStatus;
 import com.ghml.feiniao.common.constants.RedisPrefix;
@@ -18,14 +17,12 @@ import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.*;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import com.ghml.feiniao.users.service.*;
-import com.ghml.feiniao.users.utils.MinIOUtils;
-import io.minio.MinioClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,27 +38,17 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity> implements CreatorService {
 
     private final CreatorMapper creatorMapper;
-    private final MinioClient minioClient;
     private final RedisService redisService;
     private final TransactionTemplate transactionTemplate;
     private final CreatorPlatformService creatorPlatformService;
     private final CreatorTypeService creatorTypeService;
     private final CreatorTagService creatorTagService;
     private final CreatorSpecialtyService creatorSpecialtyService;
-
-    public CreatorServiceImpl(CreatorMapper creatorMapper, MinioClient minioClient, RedisService redisService, TransactionTemplate transactionTemplate, CreatorPlatformService creatorPlatformService, CreatorTypeService creatorTypeService, CreatorTagService creatorTagService, CreatorSpecialtyService creatorSpecialtyService) {
-        this.creatorMapper = creatorMapper;
-        this.minioClient = minioClient;
-        this.redisService = redisService;
-        this.transactionTemplate = transactionTemplate;
-        this.creatorPlatformService = creatorPlatformService;
-        this.creatorTypeService = creatorTypeService;
-        this.creatorTagService = creatorTagService;
-        this.creatorSpecialtyService = creatorSpecialtyService;
-    }
+    private final CreatorCaseService creatorCaseService;
 
     // 多条件分页查询创作者
     @Override
@@ -129,22 +116,6 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                         .tagId(tag.getTagId())
                         .tagName(tag.getTagName())
                         .build()).toList();
-    }
-
-    // 查询案例
-    @Override
-    public List<CaseVo> getCaseVos(String creatorId) {
-        List<CaseEntity> cases = creatorMapper.getCaseVos(creatorId);
-        return cases.stream()
-                .map(caseEntity -> CaseVo.builder()
-                        .caseId(caseEntity.getCaseId())
-                        .caseTitle(caseEntity.getCaseTitle())
-                        .coverUrl(caseEntity.getCoverUrl())
-                        .videoUrl(caseEntity.getVideoUrl())
-                        .status(caseEntity.getStatus())
-                        .createTime(caseEntity.getCreateTime())
-                        .build())
-                .toList();
     }
 
     // 更新创作者信息
@@ -273,7 +244,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         // 查询模特标签
         List<TagVo> tags = this.getTags(creatorId);
         // 查询案例
-        List<CaseVo> caseVos = this.getCaseVos(creatorId);
+        List<CaseVo> caseVos = creatorCaseService.getCases(creatorId);
         // 构建vo
         return CreatorDetailsVo.builder()
                 .userId(creatorId)
@@ -311,19 +282,6 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .size(result.getSize())
                 .pages(result.getPages())
                 .build();
-    }
-
-    // 上传视频到OSS
-    @Override
-    public String uploadVideo(MultipartFile video) {
-        String currentUserId = SecurityUtils.getCurrentUserId();
-        String filename = currentUserId + "." + StringUtils.substringAfter(video.getOriginalFilename(), ".");
-        try {
-            return MinIOUtils.uploadFile(minioClient, video, Bucket.VIDEOS.getName(), filename);
-        } catch (Exception e) {
-            log.error("OSS视频上传失败:{}", e.getMessage());
-            throw new ServiceException(Code.OSS_ERROR);
-        }
     }
 
     @Override

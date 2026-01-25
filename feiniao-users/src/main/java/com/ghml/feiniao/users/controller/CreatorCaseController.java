@@ -22,7 +22,8 @@ public class CreatorCaseController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<String> uploadCase(@ModelAttribute VideoUploadDto videoUploadDto) {
         try {
-            return creatorCaseService.uploadCase(videoUploadDto);
+            String caseId = creatorCaseService.uploadCase(videoUploadDto);
+            return R.ok(caseId);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }
@@ -32,7 +33,8 @@ public class CreatorCaseController {
     @GetMapping("/{creatorId}")
     public R<List<CaseVo>> getCase(@PathVariable("creatorId") String creatorId) {
         try {
-            return creatorCaseService.getCase(creatorId);
+            List<CaseVo> vos = creatorCaseService.getCases(creatorId);
+            return R.ok(vos);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

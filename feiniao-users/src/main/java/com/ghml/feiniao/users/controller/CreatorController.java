@@ -5,11 +5,15 @@ import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.utils.PageResult;
-import com.ghml.feiniao.common.vo.*;
+import com.ghml.feiniao.common.vo.CreatorDetailsVo;
+import com.ghml.feiniao.common.vo.CreatorDisplayVo;
+import com.ghml.feiniao.common.vo.ModelTypeVo;
+import com.ghml.feiniao.common.vo.PlatformVo;
+import com.ghml.feiniao.common.vo.SpecialtyVo;
+import com.ghml.feiniao.common.vo.TagVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -92,17 +96,6 @@ public class CreatorController {
         }
     }
 
-    // 获取创作者案例
-    @GetMapping("/{creatorId}/cases")
-    public R<List<CaseVo>> getCases(@PathVariable("creatorId") String creatorId) {
-        try {
-            List<CaseVo> vos = creatorService.getCaseVos(creatorId);
-            return R.ok(vos);
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
-    }
-
     // 更新创作者详情信息
     @PatchMapping
     public R<CreatorDetailsVo> patchCreator(@RequestBody CreatorDto dto) {
@@ -125,14 +118,4 @@ public class CreatorController {
         }
     }
 
-    // 创作者视频上传到OSS
-    @PostMapping("/video")
-    public R<String> uploadVideo(@RequestParam("video") MultipartFile video) {
-        try {
-            String respO = creatorService.uploadVideo(video);
-            return R.ok(respO);
-        } catch (ServiceException e) {
-            return R.failed(e.getCode());
-        }
-    }
 }

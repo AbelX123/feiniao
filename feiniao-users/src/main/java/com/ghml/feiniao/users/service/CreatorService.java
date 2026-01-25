@@ -6,8 +6,6 @@ import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 /**
@@ -24,8 +22,6 @@ public interface CreatorService extends IService<CreatorEntity> {
 
     PageResult<CreatorDisplayVo> favoriteCreators(CreatorsDto creatorsDto);
 
-    String uploadVideo(MultipartFile video);
-
     void register(CreatorEntity creator);
 
     List<ModelTypeVo> getModelTypesById(String creatorId);
@@ -35,8 +31,6 @@ public interface CreatorService extends IService<CreatorEntity> {
     List<SpecialtyVo> getSpecialties(String creatorId);
 
     List<TagVo> getTags(String creatorId);
-
-    List<CaseVo> getCaseVos(String creatorId);
 
     CreatorDetailsVo patchCreator(CreatorDto dto);
 }

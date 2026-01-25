@@ -1,7 +1,6 @@
 package com.ghml.feiniao.users.service.impl;
 
 import com.ghml.feiniao.common.api.Code;
-import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.constants.Bucket;
 import com.ghml.feiniao.common.dto.VideoUploadDto;
 import com.ghml.feiniao.common.entity.CaseEntity;
@@ -34,7 +33,7 @@ public class CreatorCaseServiceImpl implements CreatorCaseService {
     private final MinIOProps minIOProps;
 
     @Override
-    public R<String> uploadCase(VideoUploadDto dto) {
+    public String uploadCase(VideoUploadDto dto) {
         if (dto == null || StringUtils.isBlank(dto.getTitle())
                 || dto.getCover() == null || dto.getCover().isEmpty()
                 || dto.getVideo() == null || dto.getVideo().isEmpty()) {
@@ -68,7 +67,7 @@ public class CreatorCaseServiceImpl implements CreatorCaseService {
                 throw new ServiceException(Code.OPERATION_FAILED);
             }
 
-            return R.ok(caseId);
+            return caseId;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
@@ -78,12 +77,12 @@ public class CreatorCaseServiceImpl implements CreatorCaseService {
     }
 
     @Override
-    public R<List<CaseVo>> getCase(String creatorId) {
+    public List<CaseVo> getCases(String creatorId) {
         if (StringUtils.isBlank(creatorId)) {
             throw new ServiceException(Code.PARAM_ERROR);
         }
         List<CaseEntity> cases = creatorMapper.getCaseVos(creatorId);
-        List<CaseVo> vos = cases.stream()
+        return cases.stream()
                 .map(caseEntity -> CaseVo.builder()
                         .caseId(caseEntity.getCaseId())
                         .caseTitle(caseEntity.getCaseTitle())
@@ -93,7 +92,6 @@ public class CreatorCaseServiceImpl implements CreatorCaseService {
                         .createTime(caseEntity.getCreateTime())
                         .build())
                 .toList();
-        return R.ok(vos);
     }
 
     private String uploadToMinio(String creatorId,
