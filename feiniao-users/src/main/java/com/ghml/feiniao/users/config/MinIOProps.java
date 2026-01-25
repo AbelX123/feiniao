@@ -25,6 +25,8 @@ public class MinIOProps {
     private String cdnPrefix;
     // 头像外链时间
     private Integer avatarExpiry;
+    // 案例外链时间
+    private Integer caseExpiry;
 
     @Override
     public String toString() {

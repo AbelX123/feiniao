@@ -19,6 +19,9 @@ public class CaseEntity implements Serializable {
     @TableId(value = "case_id")
     private String caseId;
 
+    @TableField(value = "creator_id")
+    private String creatorId;
+
     @TableField(value = "case_title")
     private String caseTitle;
 
