@@ -10,4 +10,6 @@ public interface OrderService {
     String createOrder(OrderDto dto);
 
     List<OrderRecordVo> getOrders();
+
+    void cancelOrder(String orderId);
 }

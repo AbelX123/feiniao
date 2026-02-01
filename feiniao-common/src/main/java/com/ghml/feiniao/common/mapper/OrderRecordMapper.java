@@ -6,6 +6,7 @@ import com.ghml.feiniao.common.vo.OrderRecordVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -35,4 +36,12 @@ public interface OrderRecordMapper extends BaseMapper<OrderRecordEntity> {
             ORDER BY o.create_time DESC
             """)
     List<OrderRecordVo> listOrderRecords(@Param("brandId") String brandId);
+
+    @Update("""
+            UPDATE order_records
+            SET order_status = 2
+            WHERE order_id = #{orderId}
+              AND brand_id = #{brandId}
+            """)
+    int cancelOrder(@Param("orderId") String orderId, @Param("brandId") String brandId);
 }

@@ -58,4 +58,16 @@ public class OrderServiceImpl implements OrderService {
         records.forEach(record -> record.setGender(Gender.getDescByCode(record.getGenderCode())));
         return records;
     }
+
+    @Override
+    public void cancelOrder(String orderId) {
+        if (StringUtils.isBlank(orderId)) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        int updated = orderRecordMapper.cancelOrder(orderId, currentUserId);
+        if (updated <= 0) {
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+    }
 }

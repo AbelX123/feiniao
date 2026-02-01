@@ -42,4 +42,17 @@ public class OrdersController {
             return R.failed(e.getCode());
         }
     }
+
+    /**
+     * 取消订单
+     */
+    @DeleteMapping("/{orderId}")
+    public R<?> delOrder(@PathVariable String orderId) {
+        try {
+            orderService.cancelOrder(orderId);
+            return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
 }
