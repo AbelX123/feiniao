@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class OrderRecordVo implements Serializable {
     private String orderId; // 订单编号
     private LocalDateTime createTime; // 订单创建时间
+    private String username; // 模特姓名
     private String coverUrl; // 头像链接
     private Integer genderCode; // 性别编码
     private String gender; // 性别描述
