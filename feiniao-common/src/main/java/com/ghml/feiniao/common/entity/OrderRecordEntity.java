@@ -34,6 +34,9 @@ public class OrderRecordEntity implements Serializable {
     @TableField(value = "creator_id")
     private String creatorId;
 
+    @TableField(value = "brand_id")
+    private String brandId;
+
     @TableField(value = "platform_code")
     private String platformCode;
 

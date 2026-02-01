@@ -1,16 +1,20 @@
 package com.ghml.feiniao.orders.service.impl;
 
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.dto.OrderDto;
 import com.ghml.feiniao.common.entity.OrderRecordEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.OrderRecordMapper;
+import com.ghml.feiniao.common.vo.OrderRecordVo;
 import com.ghml.feiniao.orders.service.OrderService;
+import com.ghml.feiniao.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,6 +24,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String createOrder(OrderDto dto) {
+
+        String currentUserId = SecurityUtils.getCurrentUserId();
         if (dto == null) {
             throw new ServiceException(Code.PARAM_ERROR);
         }
@@ -32,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
         entity.setVideoFormat(dto.getVideoFormat());
         entity.setVideoNum(dto.getVideoNum());
         entity.setCreatorId(dto.getCreatorId());
+        entity.setBrandId(currentUserId);
         entity.setPlatformCode(dto.getPlatformCode());
         entity.setOrderAmount(dto.getOrderAmount());
         entity.setOrderStatus(0);
@@ -42,5 +49,13 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException(Code.OPERATION_FAILED);
         }
         return orderId;
+    }
+
+    @Override
+    public List<OrderRecordVo> getOrders() {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        List<OrderRecordVo> records = orderRecordMapper.listOrderRecords(currentUserId);
+        records.forEach(record -> record.setGender(Gender.getDescByCode(record.getGenderCode())));
+        return records;
     }
 }
