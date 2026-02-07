@@ -33,16 +33,25 @@ public class WeatherService implements McpTool {
             Map.entry("西安", new WeatherInfo("西安", "晴", 3, 30, "西北风3级"))
     );
 
-    @Tool(description = "根据城市名称获取当前天气信息，返回温度、湿度、天气状况和风力等数据")
-    public String getWeather(@ToolParam(description = "要查询天气的城市名称，例如：北京、上海、广州") String city) {
-        log.info("查询城市天气: {}", city);
+    @Tool(description = """
+            根据城市名称查询天气信息，返回温度、湿度、天气状况和风力等数据。
+            支持查询指定日期的天气。若用户未提供日期则查询当天。
+            当用户只提供城市时，你必须先追问：1) 哪一天？2) 哪个月？3) 哪年？
+            直到获得完整日期信息后再调用本工具，否则不得调用。
+            """)
+    public String getWeather(
+            @ToolParam(description = "要查询天气的城市名称，例如：北京、上海、广州") String city,
+            @ToolParam(description = "可选，查询日期，格式：yyyy-MM-dd，如 2025-02-15。不传则查当天") String date) {
+        log.info("查询城市天气: city={}, date={}", city, date);
         WeatherInfo info = WEATHER_DATA.get(city);
         if (info == null) {
             return String.format("抱歉，暂不支持查询 [%s] 的天气信息。当前支持的城市有：%s",
                     city, String.join("、", WEATHER_DATA.keySet()));
         }
-        return String.format("城市：%s，天气：%s，温度：%d°C，湿度：%d%%，风力：%s",
-                info.city(), info.weather(), info.temperature(), info.humidity(), info.wind());
+        // 简单模拟：有 date 时加点说明，无 date 时当作当天
+        String dateHint = (date != null && !date.isBlank()) ? date + " " : "当天 ";
+        return String.format("%s城市：%s，天气：%s，温度：%d°C，湿度：%d%%，风力：%s",
+                dateHint, info.city(), info.weather(), info.temperature(), info.humidity(), info.wind());
     }
 
     /**
@@ -54,5 +63,6 @@ public class WeatherService implements McpTool {
             int temperature,
             int humidity,
             String wind
-    ) {}
+    ) {
+    }
 }

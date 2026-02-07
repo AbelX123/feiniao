@@ -50,11 +50,11 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
     private final CreatorSpecialtyService creatorSpecialtyService;
     private final CreatorCaseService creatorCaseService;
 
-    // 多条件分页查询创作者
+    // 多条件分页查询创作者（支持免鉴权调用，如 MCP 工具）
     @Override
     public PageResult<CreatorDisplayVo> selectCreatorsByConditions(CreatorsDto query) {
-        // 获取当前用户
-        String currentUserId = SecurityUtils.getCurrentUserId();
+        // 获取当前用户，未登录时为 null（isFavorite 均为 0）
+        String currentUserId = SecurityUtils.getCurrentUserIdOrNull();
         // 创建分页对象
         Page<CreatorEntity> page = Page.of(query.getPageNum(), query.getPageSize());
         // 执行查询

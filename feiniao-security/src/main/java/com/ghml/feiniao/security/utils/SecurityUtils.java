@@ -24,6 +24,19 @@ public class SecurityUtils {
         throw new ServiceException(Code.USER_NOT_EXIST);
     }
 
+    /**
+     * 获取当前用户 ID，未登录时返回 null（用于允许免鉴权调用的接口）
+     */
+    public static String getCurrentUserIdOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof MyUserDetails userDetails) {
+            return userDetails.getUserId();
+        }
+
+        return null;
+    }
+
     public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
