@@ -2,9 +2,9 @@ package com.ghml.feiniao.recommendation.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.ghml.feiniao.recommendation.client.DeepSeekClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
-    private final DeepSeekClient deepSeekClient;
+    private final ChatClient chatClient;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -55,44 +55,44 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             startMsg.put("content", "");
             sendMessageSafely(session, startMsg);
 
-            // 流式调用 DeepSeek API
-            deepSeekClient.sendMessageStream(
-                    userMessage,
-                    // onChunk: 接收到每个数据块时发送
-                    chunk -> {
-                        try {
-                            JSONObject chunkMsg = new JSONObject();
-                            chunkMsg.put("type", "chunk");
-                            chunkMsg.put("content", chunk);
-                            sendMessageSafely(session, chunkMsg);
-                        } catch (Exception e) {
-                            log.error("发送流式数据块失败: {}", e.getMessage(), e);
-                        }
-                    },
-                    // onError: 错误处理
-                    error -> {
-                        log.error("流式处理异常: {}", error.getMessage(), error);
-                        try {
-                            JSONObject errorMsg = new JSONObject();
-                            errorMsg.put("type", "error");
-                            errorMsg.put("content", "处理消息时发生错误: " + error.getMessage());
-                            sendMessageSafely(session, errorMsg);
-                        } catch (Exception e) {
-                            log.error("发送错误消息失败: {}", e.getMessage(), e);
-                        }
-                    },
-                    // onComplete: 完成标记
-                    () -> {
-                        try {
-                            JSONObject endMsg = new JSONObject();
-                            endMsg.put("type", "end");
-                            endMsg.put("content", "");
-                            sendMessageSafely(session, endMsg);
-                        } catch (Exception e) {
-                            log.error("发送结束消息失败: {}", e.getMessage(), e);
-                        }
-                    }
-            );
+            // 使用 Spring AI ChatClient 流式返回（DeepSeek + MCP 工具）
+            chatClient.prompt()
+                    .user(userMessage)
+                    .stream()
+                    .content()
+                    .subscribe(
+                            chunk -> {
+                                try {
+                                    JSONObject chunkMsg = new JSONObject();
+                                    chunkMsg.put("type", "chunk");
+                                    chunkMsg.put("content", chunk);
+                                    sendMessageSafely(session, chunkMsg);
+                                } catch (Exception e) {
+                                    log.error("发送流式数据块失败: {}", e.getMessage(), e);
+                                }
+                            },
+                            error -> {
+                                log.error("流式处理异常: {}", error.getMessage(), error);
+                                try {
+                                    JSONObject errorMsg = new JSONObject();
+                                    errorMsg.put("type", "error");
+                                    errorMsg.put("content", "处理消息时发生错误: " + error.getMessage());
+                                    sendMessageSafely(session, errorMsg);
+                                } catch (Exception e) {
+                                    log.error("发送错误消息失败: {}", e.getMessage(), e);
+                                }
+                            },
+                            () -> {
+                                try {
+                                    JSONObject endMsg = new JSONObject();
+                                    endMsg.put("type", "end");
+                                    endMsg.put("content", "");
+                                    sendMessageSafely(session, endMsg);
+                                } catch (Exception e) {
+                                    log.error("发送结束消息失败: {}", e.getMessage(), e);
+                                }
+                            }
+                    );
 
         } catch (Exception e) {
             log.error("解析消息失败: {}", e.getMessage(), e);
