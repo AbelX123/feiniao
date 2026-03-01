@@ -1,5 +1,6 @@
 # 多阶段构建：Maven 构建 + JRE 运行
-FROM eclipse-temurin:21-jdk-alpine AS builder
+# 使用官方 Maven 镜像，避免构建时 apk 安装 maven 导致网络卡顿
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /build
 
@@ -13,9 +14,6 @@ COPY feiniao-orders feiniao-orders
 COPY feiniao-mcp feiniao-mcp
 COPY feiniao-recommendation feiniao-recommendation
 COPY feiniao-payments feiniao-payments
-
-# 安装 Maven（Alpine 精简版）
-RUN apk add --no-cache maven
 
 # 构建参数：指定要构建的模块
 ARG MODULE=feiniao-users
