@@ -7,7 +7,7 @@
     <!-- ✅ 模块信息 -->
     <groupId>com.ghml</groupId>
     <artifactId>feiniao</artifactId>
-    <version>${revision}</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>feiniao</name>
     <dependencies>
@@ -48,6 +48,7 @@
         <jjwt.version>0.12.6</jjwt.version>
         <mysql.version>8.0.28</mysql.version>
         <minio.version>8.5.17</minio.version>
+        <lombok.version>1.18.36</lombok.version>
     </properties>
 
     <!-- ✅ 仅声明子模块可能公用的依赖版本 -->
@@ -155,10 +156,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
@@ -167,6 +176,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <skip>true</skip>
                     <executable>true</executable>
                     <!-- 指定JVM版本 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>

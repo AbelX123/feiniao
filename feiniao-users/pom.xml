@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.ghml</groupId>
         <artifactId>feiniao</artifactId>
-        <version>${revision}</version>
+        <version>1.0.0</version>
     </parent>
 
     <!-- ✅ 模块信息 -->
@@ -67,7 +67,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.ghml.feiniao.users.FeiniaoUsersApplication</mainClass>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
             </plugin>
         </plugins>

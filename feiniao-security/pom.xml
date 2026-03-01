@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.ghml</groupId>
         <artifactId>feiniao</artifactId>
-        <version>${revision}</version>
+        <version>1.0.0</version>
     </parent>
 
     <!-- ✅ 模块信息 -->
