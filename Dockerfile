@@ -22,6 +22,9 @@ ARG MODULE=feiniao-users
 
 # 构建指定模块（跳过测试）
 RUN mvn clean package -pl ${MODULE} -am -DskipTests -q
+# 固定输出要运行的 jar，明确排除 *.original
+RUN JAR_PATH=$(ls /build/${MODULE}/target/*.jar | grep -v '\.original$' | head -n 1) \
+    && cp "${JAR_PATH}" /build/app.jar
 
 # 运行阶段
 FROM eclipse-temurin:21-jre-alpine
@@ -34,7 +37,7 @@ RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -D appuser
 ARG MODULE=feiniao-users
 
 # 从构建阶段复制 jar
-COPY --from=builder /build/${MODULE}/target/*.jar app.jar
+COPY --from=builder /build/app.jar app.jar
 
 USER appuser
 
