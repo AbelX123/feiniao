@@ -30,6 +30,7 @@ public class CreatorApiClient {
 
     public PageResult<CreatorDisplayVo> selectCreators(CreatorsDto dto) {
         WebClient client = createUsersClient();
+        log.info("调用 users 创作者查询接口: baseUrl={}, path=/api/users/creators", apiProperties.getUsersBaseUrl());
         R<PageResult<CreatorDisplayVo>> body = client.post()
                 .uri("/api/users/creators")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -40,10 +41,13 @@ public class CreatorApiClient {
         if (body == null || !"0000".equals(body.getCode())) {
             throw new IllegalStateException("调用创作者列表 API 失败: " + (body != null ? body.getMsg() : "无响应"));
         }
+        long total = body.getData() != null ? body.getData().getTotal() : 0L;
+        log.info("调用 users 创作者查询接口成功: total={}", total);
         return body.getData();
     }
 
     public JSONObject getCreatorFilterOptions() {
+        log.info("调用 dicts 筛选选项接口: baseUrl={}", apiProperties.getDictsBaseUrl());
         WebClient dictsClient = WebClient.builder()
                 .baseUrl(apiProperties.getDictsBaseUrl() + "/api/dicts")
                 .build();
@@ -64,6 +68,7 @@ public class CreatorApiClient {
             log.warn("获取筛选选项失败: {}", e.getMessage());
             throw new IllegalStateException("获取模特筛选选项失败: " + e.getMessage());
         }
+        log.info("调用 dicts 筛选选项接口成功");
         return result;
     }
 

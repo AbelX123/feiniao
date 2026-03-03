@@ -33,7 +33,9 @@ public class CreatorSelectTool implements McpTool {
             """)
     public String getCreatorFilterOptions() {
         try {
+            log.info("MCP 工具调用: getCreatorFilterOptions");
             var options = creatorApiClient.getCreatorFilterOptions();
+            log.info("MCP 工具调用完成: getCreatorFilterOptions");
             return options.toJSONString();
         } catch (Exception e) {
             log.error("获取模特筛选选项失败", e);
@@ -57,6 +59,8 @@ public class CreatorSelectTool implements McpTool {
             @ToolParam(description = "页码，默认1") Integer pageNum,
             @ToolParam(description = "每页条数，默认10") Integer pageSize) {
         try {
+            log.info("MCP 工具调用: selectCreators, genders={}, platformCodes={}, countryCodes={}, ageRanges={}, modelTypeIds={}, modelTagIds={}, specialtyIds={}, pageNum={}, pageSize={}",
+                    genders, platformCodes, countryCodes, ageRanges, modelTypeIds, modelTagIds, specialtyIds, pageNum, pageSize);
             CreatorsDto dto = new CreatorsDto();
             dto.setPageNum(pageNum != null ? pageNum : 1);
             dto.setPageSize(pageSize != null ? pageSize : 10);
@@ -69,6 +73,9 @@ public class CreatorSelectTool implements McpTool {
             dto.setSpecialtyIds(parseIntList(specialtyIds));
 
             PageResult<CreatorDisplayVo> result = creatorApiClient.selectCreators(dto);
+            int count = result != null && result.getRecords() != null ? result.getRecords().size() : 0;
+            long total = result != null ? result.getTotal() : 0L;
+            log.info("MCP 工具调用完成: selectCreators, total={}, currentPageCount={}", total, count);
             return formatCreatorResult(result);
         } catch (Exception e) {
             log.error("查询模特列表失败", e);

@@ -23,6 +23,15 @@ public class McpClientConfig {
                     禁止出现：specialtyId、tagId、modelTypeId、platformCode、countryCode、ageRange、userId 等。
                     例如：应说「运动健身品类」「运动健身标签」「抖音平台」，而非「specialtyId: 13」「tagId: 17」。
                     向用户展示选项时，仅使用品类名称、标签名称、平台名称等自然语言描述。
+
+                    当用户提出以下类型需求时，你必须优先调用 MCP 工具，禁止凭空生成结果：
+                    1) 查询/筛选/推荐模特（例如“找中国男性模特”“推荐抖音健身模特”）
+                    2) 查询天气（例如“北京明天天气”）
+
+                    规则：
+                    - 若缺少筛选条件，可先追问，再调用工具。
+                    - 未调用工具前，不得输出具体模特列表、人数或详细属性。
+                    - 工具返回后，必须基于工具结果作答，不得编造。
                     """)
                 .defaultToolCallbacks(toolCallbackProvider)
                 .build();
