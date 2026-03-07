@@ -71,10 +71,10 @@ public class MinIOUtils {
                             .object(filename)
                             .build()
             );
-            return false;
+            return true;
         } catch (Exception e) {
             log.warn("对象不存在或不可访问: bucket={}, object={}, reason={}", bucket, filename, e.getMessage());
-            return true;
+            return false;
         }
     }
 

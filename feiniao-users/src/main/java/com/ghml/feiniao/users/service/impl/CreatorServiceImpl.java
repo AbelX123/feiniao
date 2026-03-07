@@ -1,5 +1,6 @@
 package com.ghml.feiniao.users.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
@@ -214,15 +215,25 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         transactionTemplate.executeWithoutResult(status -> {
             try {
                 // 基本更新
-                this.updateById(entity);
+                if (hasBasicProfileUpdates(entity)) {
+                    this.updateById(entity);
+                }
                 // 平台关系更新
-                creatorPlatformService.removeAndSaveBatch(cps);
+                if (!CollectionUtils.isEmpty(cps)) {
+                    creatorPlatformService.removeAndSaveBatch(cps);
+                }
                 // 类型更新
-                creatorTypeService.removeAndSaveBatch(cts);
+                if (!CollectionUtils.isEmpty(cts)) {
+                    creatorTypeService.removeAndSaveBatch(cts);
+                }
                 // 标签更新
-                creatorTagService.removeAndSaveBatch(cTags);
+                if (!CollectionUtils.isEmpty(cTags)) {
+                    creatorTagService.removeAndSaveBatch(cTags);
+                }
                 // 品类更新
-                creatorSpecialtyService.removeAndSaveBatch(csEs);
+                if (!CollectionUtils.isEmpty(csEs)) {
+                    creatorSpecialtyService.removeAndSaveBatch(csEs);
+                }
             } catch (ServiceException e) {
                 status.setRollbackOnly();
                 log.warn("创作者[{}]更新业务异常: {}", creatorId, e.getMessage());
@@ -234,6 +245,20 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
             }
         });
         return this.getCreatorById(creatorId);
+    }
+
+    private boolean hasBasicProfileUpdates(CreatorEntity entity) {
+        return StringUtils.isNotBlank(entity.getUsername())
+                || StringUtils.isNotBlank(entity.getPhoneCountryCode())
+                || StringUtils.isNotBlank(entity.getPhoneNumber())
+                || StringUtils.isNotBlank(entity.getPhoneFull())
+                || entity.getPhoneVerified() != null
+                || entity.getVerifiedAt() != null
+                || entity.getVideoPrice() != null
+                || StringUtils.isNotBlank(entity.getCountryCode())
+                || entity.getGender() != null
+                || StringUtils.isNotBlank(entity.getAgeRange())
+                || entity.getIsAvailable() != null;
     }
 
 
@@ -395,7 +420,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
     }
 
     private AvatarVo regenerateAvatarUrl(String creatorId, boolean failOnMissing) throws Exception {
-        if (MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), creatorId)) {
+        if (!MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), creatorId)) {
             if (failOnMissing) {
                 throw new ServiceException(Code.OSS_NOT_EXIST);
             }
@@ -411,11 +436,11 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         );
         LocalDateTime expiryTime = LocalDateTime.now().plusHours(expiryHours);
 
-        CreatorEntity update = new CreatorEntity();
-        update.setUserId(creatorId);
-        update.setAvatarUrl(avatarUrl);
-        update.setAvatarUrlExpiry(expiryTime);
-        if (!this.updateById(update)) {
+        boolean ok = this.update(new LambdaUpdateWrapper<CreatorEntity>()
+                .eq(CreatorEntity::getUserId, creatorId)
+                .set(CreatorEntity::getAvatarUrl, avatarUrl)
+                .set(CreatorEntity::getAvatarUrlExpiry, expiryTime));
+        if (!ok) {
             throw new ServiceException(Code.OPERATION_FAILED);
         }
         return AvatarVo.builder()

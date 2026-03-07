@@ -7,6 +7,7 @@ import com.ghml.feiniao.users.service.CreatorTagService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class CreatorTagServiceImpl
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void removeAndSaveBatch(List<CreatorTagEntity> cTags) {
+        if (CollectionUtils.isEmpty(cTags)) {
+            return;
+        }
         // 删除
         List<String> creatorIds = cTags.stream()
                 .map(CreatorTagEntity::getCreatorId)

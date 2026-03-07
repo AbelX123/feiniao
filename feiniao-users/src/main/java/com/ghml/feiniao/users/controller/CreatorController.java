@@ -14,6 +14,7 @@ import com.ghml.feiniao.common.vo.SpecialtyVo;
 import com.ghml.feiniao.common.vo.TagVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ import java.util.List;
  * @date 2025-10-28 21:06
  * @description 创作者资源入口
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/users/creators")
 @RequiredArgsConstructor

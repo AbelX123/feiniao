@@ -7,6 +7,7 @@ import com.ghml.feiniao.users.service.CreatorPlatformService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,9 @@ public class CreatorPlatformServiceImpl extends ServiceImpl<CreatorPlatformMappe
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void removeAndSaveBatch(List<CreatorPlatformEntity> cps) {
+        if (CollectionUtils.isEmpty(cps)) {
+            return;
+        }
         // 删除
         List<String> creatorIds = cps.stream()
                 .map(CreatorPlatformEntity::getCreatorId)

@@ -176,7 +176,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     }
 
     private AvatarVo regenerateAvatarUrl(String objectKey) throws Exception {
-        if (MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), objectKey)) {
+        if (!MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), objectKey)) {
             throw new ServiceException(Code.OSS_NOT_EXIST);
         }
 

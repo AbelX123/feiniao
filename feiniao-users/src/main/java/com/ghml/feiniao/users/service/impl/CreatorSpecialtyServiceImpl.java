@@ -7,6 +7,7 @@ import com.ghml.feiniao.users.service.CreatorSpecialtyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class CreatorSpecialtyServiceImpl
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void removeAndSaveBatch(List<CreatorSpecialtyEntity> csEs) {
+        if (CollectionUtils.isEmpty(csEs)) {
+            return;
+        }
         // 删除
         List<String> creatorIds = csEs.stream()
                 .map(CreatorSpecialtyEntity::getCreatorId)
