@@ -32,7 +32,8 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
             "       cp.gender,  " +
             "       ar.age_range_desc,  " +
             "       cp.is_available,  " +
-            "       cp.cover_url,  " +
+            "       cp.avatar_url,  " +
+            "       cp.avatar_url_expiry,  " +
             "       c.country_name  " +
             "FROM creator_profiles cp  " +
             "         LEFT JOIN country c ON cp.country_code = c.country_code  " +
@@ -44,7 +45,8 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
     @Select("""
             SELECT bfc.creator_id as user_id,
             	cp.username,
-            	cp.cover_url,
+            	cp.avatar_url,
+            	cp.avatar_url_expiry,
             	cp.gender,
             	cp.video_price,
             	cp.country_code,

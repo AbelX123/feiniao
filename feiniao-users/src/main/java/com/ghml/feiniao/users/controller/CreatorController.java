@@ -5,6 +5,7 @@ import com.ghml.feiniao.common.dto.CreatorDto;
 import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.utils.PageResult;
+import com.ghml.feiniao.common.vo.AvatarVo;
 import com.ghml.feiniao.common.vo.CreatorDetailsVo;
 import com.ghml.feiniao.common.vo.CreatorDisplayVo;
 import com.ghml.feiniao.common.vo.ModelTypeVo;
@@ -14,6 +15,7 @@ import com.ghml.feiniao.common.vo.TagVo;
 import com.ghml.feiniao.users.service.CreatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -101,6 +103,28 @@ public class CreatorController {
     public R<CreatorDetailsVo> patchCreator(@RequestBody CreatorDto dto) {
         try {
             CreatorDetailsVo vo = creatorService.patchCreator(dto);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 创作者头像上传OSS
+    @PostMapping("/avatar")
+    public R<AvatarVo> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        try {
+            AvatarVo vo = creatorService.uploadAvatar(file);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 获取创作者头像外链
+    @GetMapping("/avatar")
+    public R<AvatarVo> getAvatarUrl() {
+        try {
+            AvatarVo vo = creatorService.getAvatarUrl();
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

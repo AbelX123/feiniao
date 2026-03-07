@@ -6,7 +6,8 @@
         SELECT DISTINCT
         cp.user_id,
         cp.username,
-        cp.cover_url,
+        cp.avatar_url,
+        cp.avatar_url_expiry,
         cp.gender,
         cp.video_price,
         cp.country_code,

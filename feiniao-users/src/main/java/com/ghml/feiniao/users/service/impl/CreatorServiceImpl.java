@@ -3,6 +3,7 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.Bucket;
 import com.ghml.feiniao.common.constants.Gender;
 import com.ghml.feiniao.common.constants.PhoneStatus;
 import com.ghml.feiniao.common.constants.RedisPrefix;
@@ -16,17 +17,23 @@ import com.ghml.feiniao.common.utils.EntityUpdateHelper;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.*;
 import com.ghml.feiniao.security.utils.SecurityUtils;
+import com.ghml.feiniao.users.config.MinIOProps;
 import com.ghml.feiniao.users.service.*;
+import com.ghml.feiniao.users.utils.MinIOUtils;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,6 +56,8 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
     private final CreatorTagService creatorTagService;
     private final CreatorSpecialtyService creatorSpecialtyService;
     private final CreatorCaseService creatorCaseService;
+    private final MinioClient minioClient;
+    private final MinIOProps minIOProps;
 
     // 多条件分页查询创作者（支持免鉴权调用，如 MCP 工具）
     @Override
@@ -126,8 +135,9 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
 
         // 处理基本更新
         CreatorEntity entity = new CreatorEntity();
+        entity.setUserId(creatorId);
         // 如果存在手机号更新，验证验证码状态
-        if (!dto.getPhoneFull().isEmpty()) {
+        if (StringUtils.isNotBlank(dto.getPhoneFull())) {
             String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + dto.getPhoneFull();
             String codeInCache = (String) redisService.get(key);
             if (StringUtils.isEmpty(codeInCache) || !StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
@@ -235,6 +245,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
             throw new ServiceException(Code.CREATOR_NOT_EXIST);
         }
         CreatorEntity entity = opt.get();
+        String avatarUrl = getOrRefreshAvatarUrl(entity, false);
         // 查询类别
         List<ModelTypeVo> types = this.getModelTypesById(creatorId);
         // 查询平台
@@ -254,7 +265,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .ageRangeDesc(entity.getAgeRangeDesc())
                 .isAvailable(entity.getIsAvailable())
                 .countryName(entity.getCountryName())
-                .coverUrl(entity.getCoverUrl())
+                .coverUrl(avatarUrl)
                 .modelTypes(types.stream().map(ModelTypeVo::getModelTypeName).toList())
                 .platforms(platforms.stream().map(PlatformVo::getPlatformName).toList())
                 .specialties(specialties.stream().map(SpecialtyVo::getSpecialtyName).toList())
@@ -289,6 +300,47 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
         this.save(creator);
     }
 
+    @Override
+    public AvatarVo uploadAvatar(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        String creatorId = SecurityUtils.getCurrentUserId();
+        try {
+            MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), creatorId);
+            return regenerateAvatarUrl(creatorId, true);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("上传创作者头像失败: {}", e.getMessage(), e);
+            throw new ServiceException(Code.OSS_ERROR);
+        }
+    }
+
+    @Override
+    public AvatarVo getAvatarUrl() {
+        String creatorId = SecurityUtils.getCurrentUserId();
+        CreatorEntity creator = this.getById(creatorId);
+        if (creator == null) {
+            throw new ServiceException(Code.CREATOR_NOT_EXIST);
+        }
+
+        String avatarUrl = getOrRefreshAvatarUrl(creator, true);
+        if (StringUtils.isBlank(avatarUrl)) {
+            throw new ServiceException(Code.OSS_NOT_EXIST);
+        }
+
+        CreatorEntity refreshed = this.getById(creatorId);
+        if (refreshed == null || refreshed.getAvatarUrlExpiry() == null) {
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+
+        return AvatarVo.builder()
+                .avatar(avatarUrl)
+                .expiry(toEpochMilli(refreshed.getAvatarUrlExpiry()))
+                .build();
+    }
+
     // 将Entity列表转换为VO列表
     private List<CreatorDisplayVo> convertToVoList(List<CreatorEntity> entities) {
         if (CollectionUtils.isEmpty(entities)) {
@@ -299,7 +351,7 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                 .map(entity -> CreatorDisplayVo.builder()
                         .userId(entity.getUserId()) // 模特编号
                         .username(entity.getUsername()) // 模特名称
-                        .coverUrl(entity.getCoverUrl()) // 模特展示照片
+                        .coverUrl(getOrRefreshAvatarUrl(entity, false)) // 模特展示头像
                         .videoPrice(entity.getVideoPrice()) // 拍摄价格
                         .gender(Gender.getDescByCode(entity.getGender())) // 性别
                         .countryName(entity.getCountryName()) // 国家名称
@@ -308,5 +360,71 @@ public class CreatorServiceImpl extends ServiceImpl<CreatorMapper, CreatorEntity
                         .isFavorite(entity.getIsFavorite()) // 是否被收藏
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private String getOrRefreshAvatarUrl(CreatorEntity entity, boolean failOnMissing) {
+        if (entity == null || StringUtils.isBlank(entity.getUserId())) {
+            if (failOnMissing) {
+                throw new ServiceException(Code.PARAM_ERROR);
+            }
+            return null;
+        }
+
+        if (StringUtils.isNotBlank(entity.getAvatarUrl())
+                && entity.getAvatarUrlExpiry() != null
+                && LocalDateTime.now().isBefore(entity.getAvatarUrlExpiry())) {
+            return entity.getAvatarUrl();
+        }
+
+        try {
+            AvatarVo refreshed = regenerateAvatarUrl(entity.getUserId(), failOnMissing);
+            return refreshed.getAvatar();
+        } catch (ServiceException e) {
+            if (failOnMissing) {
+                throw e;
+            }
+            log.warn("刷新创作者头像链接失败, creatorId={}, reason={}", entity.getUserId(), e.getMessage());
+            return entity.getAvatarUrl();
+        } catch (Exception e) {
+            if (failOnMissing) {
+                throw new ServiceException(Code.OSS_ERROR);
+            }
+            log.warn("刷新创作者头像链接异常, creatorId={}, reason={}", entity.getUserId(), e.getMessage());
+            return entity.getAvatarUrl();
+        }
+    }
+
+    private AvatarVo regenerateAvatarUrl(String creatorId, boolean failOnMissing) throws Exception {
+        if (MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), creatorId)) {
+            if (failOnMissing) {
+                throw new ServiceException(Code.OSS_NOT_EXIST);
+            }
+            return AvatarVo.builder().avatar(null).expiry(0L).build();
+        }
+
+        int expiryHours = minIOProps.getAvatarExpiry();
+        String avatarUrl = MinIOUtils.getObjectUrl(
+                minioClient,
+                Bucket.AVATARS.getName(),
+                creatorId,
+                expiryHours
+        );
+        LocalDateTime expiryTime = LocalDateTime.now().plusHours(expiryHours);
+
+        CreatorEntity update = new CreatorEntity();
+        update.setUserId(creatorId);
+        update.setAvatarUrl(avatarUrl);
+        update.setAvatarUrlExpiry(expiryTime);
+        if (!this.updateById(update)) {
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+        return AvatarVo.builder()
+                .avatar(avatarUrl)
+                .expiry(toEpochMilli(expiryTime))
+                .build();
+    }
+
+    private long toEpochMilli(LocalDateTime dateTime) {
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }

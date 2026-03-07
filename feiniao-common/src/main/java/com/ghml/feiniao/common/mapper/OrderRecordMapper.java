@@ -16,7 +16,7 @@ public interface OrderRecordMapper extends BaseMapper<OrderRecordEntity> {
             SELECT o.order_id      AS orderId,
                    o.create_time   AS createTime,
                    cp.username     AS username,
-                   cp.cover_url    AS coverUrl,
+                   cp.avatar_url   AS coverUrl,
                    cp.gender       AS genderCode,
                    ar.age_range_desc AS ageRangeDesc,
                    c.country_name  AS countryName,

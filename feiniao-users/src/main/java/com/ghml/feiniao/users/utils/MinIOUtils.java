@@ -57,4 +57,22 @@ public class MinIOUtils {
         );
     }
 
+    // 判断对象是否存在
+    public static boolean objectExists(MinioClient minioClient,
+                                       String bucket,
+                                       String filename) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(filename)
+                            .build()
+            );
+            return false;
+        } catch (Exception e) {
+            log.warn("对象不存在或不可访问: bucket={}, object={}, reason={}", bucket, filename, e.getMessage());
+            return true;
+        }
+    }
+
 }

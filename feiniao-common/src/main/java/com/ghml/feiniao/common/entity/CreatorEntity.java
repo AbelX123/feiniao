@@ -9,6 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author YUHUAI
@@ -26,7 +27,8 @@ public class CreatorEntity implements Serializable {
     @TableId("user_id")
     private String userId; // 用户编号
     private String username; // 用户名
-    private String coverUrl; // 创作者展示照片
+    private String avatarUrl; // 创作者头像预签名URL
+    private LocalDateTime avatarUrlExpiry; // 头像URL过期时间点
     private String phoneCountryCode; // 手机号国家代码
     private String phoneNumber; // 手机号
     private String phoneFull; // phoneCountryCode + phoneNumber

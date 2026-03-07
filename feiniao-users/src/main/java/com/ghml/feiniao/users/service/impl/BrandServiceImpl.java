@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 /**
@@ -131,11 +132,14 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     @Override
     public AvatarVo uploadAvatar(MultipartFile file) {
         String currentUserId = SecurityUtils.getCurrentUserId();
+        if (file == null || file.isEmpty()) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
         try {
             // 上传头像到minio
             MinIOUtils.uploadFile(minioClient, file, Bucket.AVATARS.getName(), currentUserId);
             log.info("用户[{}]更新头像成功!", SecurityUtils.getCurrentUsername());
-            return getAvatarUrl();
+            return regenerateAvatarUrl(currentUserId);
         } catch (Exception e) {
             log.error("OSS文件上传失败:{}", e.getMessage());
             throw new ServiceException(Code.OSS_ERROR);
@@ -145,32 +149,63 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     // 获取头像外链
     @Override
     public AvatarVo getAvatarUrl() {
-        // 校验filename和用户是否一致
-        String filename = SecurityUtils.getCurrentUserId();
+        String userId = SecurityUtils.getCurrentUserId();
         try {
-            int expiryHours = minIOProps.getAvatarExpiry();
+            BrandEntity brand = this.getById(userId);
+            if (brand == null) {
+                throw new ServiceException(Code.USER_NOT_EXIST);
+            }
 
-            // 获取外链
-            String avatar = MinIOUtils.getObjectUrl(
-                    minioClient,
-                    Bucket.AVATARS.getName(),
-                    filename,
-                    expiryHours
-            );
+            // 若数据库中的链接仍有效，直接返回，减少重复签名
+            if (StringUtils.isNotBlank(brand.getAvatarUrl())
+                    && brand.getAvatarUrlExpiry() != null
+                    && LocalDateTime.now().isBefore(brand.getAvatarUrlExpiry())) {
+                return AvatarVo.builder()
+                        .avatar(brand.getAvatarUrl())
+                        .expiry(toEpochMilli(brand.getAvatarUrlExpiry()))
+                        .build();
+            }
 
-            // 计算失效时间
-            long generateAt = System.currentTimeMillis();
-            long expiryMillis = expiryHours * 3600L * 1000L;
-            long expiry = generateAt + expiryMillis;
-
-            return AvatarVo.builder()
-                    .avatar(avatar)
-                    .expiry(expiry)
-                    .build();
+            return regenerateAvatarUrl(userId);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             log.error("OSS外链获取失败: {}", e.getMessage(), e);
             throw new ServiceException(Code.OSS_ERROR);
         }
+    }
+
+    private AvatarVo regenerateAvatarUrl(String objectKey) throws Exception {
+        if (MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), objectKey)) {
+            throw new ServiceException(Code.OSS_NOT_EXIST);
+        }
+
+        int expiryHours = minIOProps.getAvatarExpiry();
+        String avatarUrl = MinIOUtils.getObjectUrl(
+                minioClient,
+                Bucket.AVATARS.getName(),
+                objectKey,
+                expiryHours
+        );
+        LocalDateTime expiryTime = LocalDateTime.now().plusHours(expiryHours);
+
+        BrandEntity update = new BrandEntity();
+        update.setUserId(objectKey);
+        update.setAvatarUrl(avatarUrl);
+        update.setAvatarUrlExpiry(expiryTime);
+        boolean updated = this.updateById(update);
+        if (!updated) {
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
+
+        return AvatarVo.builder()
+                .avatar(avatarUrl)
+                .expiry(toEpochMilli(expiryTime))
+                .build();
+    }
+
+    private long toEpochMilli(LocalDateTime dateTime) {
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     @Override

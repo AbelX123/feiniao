@@ -6,6 +6,7 @@ import com.ghml.feiniao.common.dto.CreatorsDto;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.utils.PageResult;
 import com.ghml.feiniao.common.vo.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
@@ -33,4 +34,8 @@ public interface CreatorService extends IService<CreatorEntity> {
     List<TagVo> getTags(String creatorId);
 
     CreatorDetailsVo patchCreator(CreatorDto dto);
+
+    AvatarVo uploadAvatar(MultipartFile file);
+
+    AvatarVo getAvatarUrl();
 }

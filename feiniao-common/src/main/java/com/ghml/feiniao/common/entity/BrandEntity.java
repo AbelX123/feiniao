@@ -28,6 +28,8 @@ public class BrandEntity implements Serializable {
     private String phoneNumber;
     private String phoneFull;
     private Integer phoneVerified;
+    private String avatarUrl;
+    private LocalDateTime avatarUrlExpiry;
     private LocalDateTime verifiedAt;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
