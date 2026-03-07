@@ -18,12 +18,12 @@ public class CreatorCaseController {
 
     private final CreatorCaseService creatorCaseService;
 
-    // 案例上传
+    // 案例上传（返回案例信息含 coverUrl、videoUrl，便于前端立即展示）
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<String> uploadCase(@ModelAttribute VideoUploadDto videoUploadDto) {
+    public R<CaseVo> uploadCase(@ModelAttribute VideoUploadDto videoUploadDto) {
         try {
-            String caseId = creatorCaseService.uploadCase(videoUploadDto);
-            return R.ok(caseId);
+            CaseVo vo = creatorCaseService.uploadCase(videoUploadDto);
+            return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }
@@ -35,6 +35,17 @@ public class CreatorCaseController {
         try {
             List<CaseVo> vos = creatorCaseService.getCases(creatorId);
             return R.ok(vos);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 根据案例编号获取案例（用于按需刷新外链）
+    @GetMapping("/id/{caseId}")
+    public R<CaseVo> getCaseById(@PathVariable("caseId") String caseId) {
+        try {
+            CaseVo vo = creatorCaseService.getCaseById(caseId);
+            return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

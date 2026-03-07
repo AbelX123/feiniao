@@ -5,6 +5,9 @@ import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,6 +75,43 @@ public class MinIOUtils {
         } catch (Exception e) {
             log.warn("对象不存在或不可访问: bucket={}, object={}, reason={}", bucket, filename, e.getMessage());
             return true;
+        }
+    }
+
+    /**
+     * 从 MinIO URL（普通URL/预签名URL）提取对象名。
+     */
+    public static String extractObjectNameFromUrl(String url, String bucket) {
+        if (url == null || url.isBlank() || bucket == null || bucket.isBlank()) {
+            return null;
+        }
+        try {
+            URI uri = URI.create(url);
+            String rawPath = uri.getRawPath();
+            if (rawPath == null || rawPath.isBlank()) {
+                return null;
+            }
+            String path = URLDecoder.decode(rawPath, StandardCharsets.UTF_8);
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+
+            // path-style: /{bucket}/{object}
+            String bucketPrefix = bucket + "/";
+            if (path.startsWith(bucketPrefix)) {
+                return path.substring(bucketPrefix.length());
+            }
+
+            // virtual-hosted-style: {bucket}.host/{object}
+            String host = uri.getHost();
+            if (host != null && host.startsWith(bucket + ".")) {
+                return path;
+            }
+
+            return path;
+        } catch (Exception e) {
+            log.warn("解析对象名失败: bucket={}, url={}, reason={}", bucket, url, e.getMessage());
+            return null;
         }
     }
 

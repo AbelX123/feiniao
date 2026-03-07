@@ -28,8 +28,14 @@ public class CaseEntity implements Serializable {
     @TableField(value = "cover_url")
     private String coverUrl;
 
+    @TableField(value = "cover_url_expiry")
+    private LocalDateTime coverUrlExpiry;
+
     @TableField(value = "video_url")
     private String videoUrl;
+
+    @TableField(value = "video_url_expiry")
+    private LocalDateTime videoUrlExpiry;
 
     @TableField(value = "status")
     private String status;

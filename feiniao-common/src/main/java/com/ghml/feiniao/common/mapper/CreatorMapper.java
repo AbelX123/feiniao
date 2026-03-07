@@ -96,8 +96,8 @@ public interface CreatorMapper extends BaseMapper<CreatorEntity> {
             "where ctm.creator_id = #{creatorId}")
     List<TagEntity> getTags(String creatorId);
 
-    // 依据用户编号查询模特案例
-    @Select("SELECT case_id, case_title, cover_url, video_url, status, create_time " +
+    // 依据用户编号查询模特案例（含 creator_id 供刷新 MinIO 外链时拼接 objectKey）
+    @Select("SELECT case_id, creator_id, case_title, cover_url, cover_url_expiry, video_url, video_url_expiry, status, create_time " +
             "FROM cases " +
             "WHERE creator_id = #{creatorId} " +
             "  AND status = 1")

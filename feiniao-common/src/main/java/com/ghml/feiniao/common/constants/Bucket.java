@@ -14,9 +14,8 @@ import lombok.Getter;
 public enum Bucket {
 
     AVATARS("avatars", "ghml-feiniao-avatars-prod", false),
-    VIDEOS("videos", "ghml-feiniao-videos-prod", false),
     COVERS("covers", "ghml-feiniao-covers-prod", false),
-    IMAGES("images", "ghml-feiniao-images-prod", false);
+    VIDEOS("videos", "ghml-feiniao-videos-prod", false);
 
     private final String key;
     private final String name;
