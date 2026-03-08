@@ -2,6 +2,7 @@ package com.ghml.feiniao.users.service.impl;
 
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.constants.Bucket;
+import com.ghml.feiniao.common.dto.CaseUpdateDto;
 import com.ghml.feiniao.common.dto.VideoUploadDto;
 import com.ghml.feiniao.common.entity.CaseEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
@@ -113,6 +114,69 @@ public class CreatorCaseServiceImpl implements CreatorCaseService {
             throw new ServiceException(Code._404);
         }
         return toCaseVo(ensureCaseUrls(opt.get(), true));
+    }
+
+    @Override
+    public CaseVo patchCaseById(String caseId, CaseUpdateDto dto) {
+        if (StringUtils.isBlank(caseId) || dto == null) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        boolean hasTitle = StringUtils.isNotBlank(dto.getCaseTitle());
+        boolean hasCover = dto.getCover() != null && !dto.getCover().isEmpty();
+        boolean hasVideo = dto.getVideo() != null && !dto.getVideo().isEmpty();
+        if (!hasTitle && !hasCover && !hasVideo) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+
+        CaseEntity existing = caseMapper.selectById(caseId);
+        if (existing == null) {
+            throw new ServiceException(Code._404);
+        }
+        String currentCreatorId = SecurityUtils.getCurrentUserId();
+        if (!StringUtils.equals(existing.getCreatorId(), currentCreatorId)) {
+            throw new ServiceException(Code._403);
+        }
+
+        try {
+            int expiryHours = minIOProps.getCaseExpiry();
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime expiryTime = now.plusHours(expiryHours);
+
+            CaseEntity update = new CaseEntity();
+            update.setCaseId(caseId);
+            update.setUpdateTime(now);
+
+            if (hasTitle) {
+                update.setCaseTitle(dto.getCaseTitle().trim());
+            }
+            if (hasCover) {
+                String coverObject = uploadToMinio(currentCreatorId, caseId, Bucket.COVERS.getKey(), dto.getCover(), Bucket.COVERS.getName());
+                String coverUrl = MinIOUtils.getObjectUrl(minioClient, Bucket.COVERS.getName(), coverObject, expiryHours);
+                update.setCoverUrl(coverUrl);
+                update.setCoverUrlExpiry(expiryTime);
+            }
+            if (hasVideo) {
+                String videoObject = uploadToMinio(currentCreatorId, caseId, Bucket.VIDEOS.getKey(), dto.getVideo(), Bucket.VIDEOS.getName());
+                String videoUrl = MinIOUtils.getObjectUrl(minioClient, Bucket.VIDEOS.getName(), videoObject, expiryHours);
+                update.setVideoUrl(videoUrl);
+                update.setVideoUrlExpiry(expiryTime);
+            }
+
+            if (caseMapper.updateById(update) <= 0) {
+                throw new ServiceException(Code.OPERATION_FAILED);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("更新案例失败: caseId={}, reason={}", caseId, e.getMessage(), e);
+            throw new ServiceException(Code.OSS_ERROR);
+        }
+
+        CaseEntity refreshed = caseMapper.selectById(caseId);
+        if (refreshed == null) {
+            throw new ServiceException(Code._404);
+        }
+        return toCaseVo(ensureCaseUrls(refreshed, true));
     }
 
     private String uploadToMinio(String creatorId,

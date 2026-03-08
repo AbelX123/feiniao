@@ -1,6 +1,7 @@
 package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
+import com.ghml.feiniao.common.dto.CaseUpdateDto;
 import com.ghml.feiniao.common.dto.VideoUploadDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.CaseVo;
@@ -30,7 +31,7 @@ public class CreatorCaseController {
     }
 
     // 根据创作者的编号获取案例
-    @GetMapping("/{creatorId}")
+    @GetMapping("/creator/{creatorId}")
     public R<List<CaseVo>> getCase(@PathVariable("creatorId") String creatorId) {
         try {
             List<CaseVo> vos = creatorCaseService.getCases(creatorId);
@@ -41,10 +42,22 @@ public class CreatorCaseController {
     }
 
     // 根据案例编号获取案例（用于按需刷新外链）
-    @GetMapping("/id/{caseId}")
+    @GetMapping("/{caseId}")
     public R<CaseVo> getCaseById(@PathVariable("caseId") String caseId) {
         try {
             CaseVo vo = creatorCaseService.getCaseById(caseId);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 根据案例编号修改案例（可修改标题/封面/视频）
+    @PatchMapping(value = "/{caseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<CaseVo> patchCaseById(@PathVariable("caseId") String caseId,
+                                   @ModelAttribute CaseUpdateDto dto) {
+        try {
+            CaseVo vo = creatorCaseService.patchCaseById(caseId, dto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

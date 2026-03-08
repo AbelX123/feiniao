@@ -1,5 +1,6 @@
 package com.ghml.feiniao.users.service;
 
+import com.ghml.feiniao.common.dto.CaseUpdateDto;
 import com.ghml.feiniao.common.dto.VideoUploadDto;
 import com.ghml.feiniao.common.vo.CaseVo;
 
@@ -12,4 +13,6 @@ public interface CreatorCaseService {
     List<CaseVo> getCases(String creatorId);
 
     CaseVo getCaseById(String caseId);
+
+    CaseVo patchCaseById(String caseId, CaseUpdateDto dto);
 }
