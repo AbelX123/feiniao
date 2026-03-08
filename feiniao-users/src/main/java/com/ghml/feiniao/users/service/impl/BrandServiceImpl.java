@@ -166,6 +166,14 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
                         .build();
             }
 
+            // 新用户未上传头像时，不应当作错误返回
+            if (!MinIOUtils.objectExists(minioClient, Bucket.AVATARS.getName(), userId)) {
+                return AvatarVo.builder()
+                        .avatar(null)
+                        .expiry(0L)
+                        .build();
+            }
+
             return regenerateAvatarUrl(userId);
         } catch (ServiceException e) {
             throw e;
