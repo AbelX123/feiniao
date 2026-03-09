@@ -10,15 +10,18 @@ import com.ghml.feiniao.common.vo.OrderRecordVo;
 import com.ghml.feiniao.orders.service.OrderService;
 import com.ghml.feiniao.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final OrderRecordMapper orderRecordMapper;
 
@@ -54,9 +57,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderRecordVo> getOrders() {
         String currentUserId = SecurityUtils.getCurrentUserId();
-        List<OrderRecordVo> records = orderRecordMapper.listOrderRecords(currentUserId);
-        records.forEach(record -> record.setGender(Gender.getDescByCode(record.getGenderCode())));
-        return records;
+        try {
+            List<OrderRecordVo> records = orderRecordMapper.listOrderRecords(currentUserId);
+            if (records == null || records.isEmpty()) {
+                return Collections.emptyList();
+            }
+            records.forEach(record -> record.setGender(Gender.getDescByCode(record.getGenderCode())));
+            return records;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("获取订单列表失败: brandId={}, reason={}", currentUserId, e.getMessage(), e);
+            throw new ServiceException(Code.OPERATION_FAILED);
+        }
     }
 
     @Override
