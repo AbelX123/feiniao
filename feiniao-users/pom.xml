@@ -57,6 +57,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- 阿里云短信SKD -->
+        <dependency>
+  <groupId>com.aliyun</groupId>
+  <artifactId>dysmsapi20170525</artifactId>
+  <version>4.5.0</version>
+</dependency>
+
     </dependencies>
 
     <!-- ✅ 构建插件 -->

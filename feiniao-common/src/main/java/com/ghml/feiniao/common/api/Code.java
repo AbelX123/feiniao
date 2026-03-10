@@ -29,7 +29,9 @@ public enum Code {
     TOKEN_EXPIRED("1003", "令牌已过期"),
     TOKEN_INVALID("1004", "令牌无效"),
     VERIFIED_CODE_EXPIRED("1005", "验证码已过期"),
-    VERIFIED_CODE_FAILED("1005", "验证码错误"),
+    VERIFIED_CODE_FAILED("1006", "验证码错误"),
+    PHONE_NOT_RIGHT("1007", "手机号有误"),
+    VERIFIED_CODE_DAILY_LIMIT("1008", "今日验证码发送次数超限额"),
 
     // 创作者相关错误码
     CREATOR_NOT_EXIST("2000", "创作者不存在"),

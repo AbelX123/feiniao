@@ -19,4 +19,7 @@ public class RedisPrefix {
 
     // 短信验证码
     public static final String PREFIX_PHONE_VERIFIED_CODE = "phone:verified:code:";
+
+    // 每日短信发送次数
+    public static final String PREFIX_PHONE_VERIFIED_DAILY_COUNT = "phone:verified:daily:count:";
 }

@@ -51,6 +51,21 @@ public class RedisService {
         return redisTemplate.opsForSet().members(key);
     }
 
+    // 自增
+    public Long increment(String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    // 自减
+    public Long decrement(String key) {
+        return redisTemplate.opsForValue().increment(key, -1);
+    }
+
+    // 设置过期时间（毫秒）
+    public Boolean expireMillis(String key, long timeoutMillis) {
+        return redisTemplate.expire(key, timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
     // 删除
     public Boolean delete(String key) {
         return redisTemplate.delete(key);
