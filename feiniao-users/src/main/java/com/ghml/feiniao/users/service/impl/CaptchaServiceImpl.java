@@ -11,6 +11,7 @@ import com.ghml.feiniao.common.entity.SmsSendLogEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.SmsSendLogMapper;
 import com.ghml.feiniao.common.service.RedisService;
+import com.ghml.feiniao.common.utils.PhoneUtils;
 import com.ghml.feiniao.users.config.AliyunSmsProps;
 import com.ghml.feiniao.users.service.CaptchaService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -32,7 +31,6 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     private static final int DAILY_SEND_LIMIT = 3;
     private static final long CAPTCHA_EXPIRE_MILLIS = 5 * 60 * 1000L; // 5分钟
-    private static final Pattern PHONE_JSON_PATTERN = Pattern.compile("\"(?:phone|phoneFull)\"\\s*:\\s*\"([^\"]+)\"");
 
     private final RedisService redisService;
     private final SmsSendLogMapper smsSendLogMapper;
@@ -40,7 +38,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     @Override
     public void create(String phoneRaw) {
-        String mobile = normalizePhone(phoneRaw);
+        String mobile = PhoneUtils.normalizePhone(phoneRaw);
         if (StringUtils.isBlank(mobile)) {
             throw new ServiceException(Code.PHONE_NOT_RIGHT);
         }
@@ -127,21 +125,6 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
 
         redisService.delete(key);
-    }
-
-    private String normalizePhone(String raw) {
-        if (raw == null) {
-            return null;
-        }
-        String phone = StringUtils.trim(raw);
-        if (phone.startsWith("\"") && phone.endsWith("\"") && phone.length() >= 2) {
-            return phone.substring(1, phone.length() - 1);
-        }
-        Matcher matcher = PHONE_JSON_PATTERN.matcher(phone);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return phone;
     }
 
     private String dailyCountKey(String mobile) {

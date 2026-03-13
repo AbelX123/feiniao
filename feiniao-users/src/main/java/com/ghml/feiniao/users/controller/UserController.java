@@ -2,6 +2,7 @@ package com.ghml.feiniao.users.controller;
 
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.constants.HttpHeaders;
+import com.ghml.feiniao.common.dto.SignInByPhoneDto;
 import com.ghml.feiniao.common.dto.UserDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.UserVo;
@@ -39,6 +40,17 @@ public class UserController {
     public R<UserVo> login(@RequestBody UserDto userDto) {
         try {
             UserVo vo = userService.signIn(userDto);
+            return R.ok(vo);
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 手机号验证码登录/注册（验证通过后未注册则自动创建用户并登录）
+    @PostMapping("/signInByPhone")
+    public R<UserVo> signInByPhone(@Valid @RequestBody SignInByPhoneDto dto) {
+        try {
+            UserVo vo = userService.signInByPhone(dto);
             return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());

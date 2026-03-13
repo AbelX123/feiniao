@@ -3,8 +3,11 @@ package com.ghml.feiniao.users.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.constants.PhoneStatus;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.constants.Role;
+import com.ghml.feiniao.common.dto.CaptchaVerifyDto;
+import com.ghml.feiniao.common.dto.SignInByPhoneDto;
 import com.ghml.feiniao.common.dto.UserDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.entity.CreatorEntity;
@@ -13,11 +16,12 @@ import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.UserMapper;
 import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.utils.JwtUtils;
+import com.ghml.feiniao.common.utils.PhoneUtils;
 import com.ghml.feiniao.common.vo.UserVo;
 import com.ghml.feiniao.security.config.MyUserDetails;
 import com.ghml.feiniao.security.utils.SecurityUtils;
+import com.ghml.feiniao.users.service.CaptchaService;
 import com.ghml.feiniao.users.service.*;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -48,6 +53,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     private final CreatorService creatorService;
     private final BrandService brandService;
     private final RoleService roleService;
+    private final CaptchaService captchaService;
+
+    private static final String DEFAULT_PASSWORD = "123456";
 
     // 公共注册
     @Override
@@ -125,6 +133,105 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         log.info("用户[{}]登录成功!", userDto.getUsername());
 
+        return vo;
+    }
+
+    // 手机号验证码登录/注册
+    @Override
+    public UserVo signInByPhone(SignInByPhoneDto dto) {
+        if (dto == null || StringUtils.isBlank(dto.getPhone()) || StringUtils.isBlank(dto.getCaptcha())) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        String phoneFull = PhoneUtils.normalizePhone(dto.getPhone());
+        if (StringUtils.isBlank(phoneFull)) {
+            throw new ServiceException(Code.PHONE_NOT_RIGHT);
+        }
+        // 验证验证码（会删除 Redis 中的验证码）
+        CaptchaVerifyDto verifyDto = new CaptchaVerifyDto();
+        verifyDto.setPhone(phoneFull);
+        verifyDto.setCaptcha(dto.getCaptcha());
+        captchaService.verify(verifyDto);
+
+        // 按手机号查是否已注册（创作者或产品主）
+        String existingUserId = findUserIdByPhoneFull(phoneFull);
+        if (existingUserId != null) {
+            return issueTokenAndBuildVo(existingUserId);
+        }
+
+        // 未注册：必须传角色
+        if (dto.getRoleId() == null || (!Role.BRAND.getRoleId().equals(dto.getRoleId()) && !Role.CREATOR.getRoleId().equals(dto.getRoleId()))) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        if (roleService.getOptById(dto.getRoleId()).isEmpty()) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+
+        String userId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        String username = "u_" + userId.substring(0, 8);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(userId);
+        userEntity.setUsername(username);
+        userEntity.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+        userEntity.setRoleId(dto.getRoleId());
+
+        transactionTemplate.executeWithoutResult(status -> {
+            try {
+                this.save(userEntity);
+                if (Role.BRAND.getRoleId().equals(dto.getRoleId())) {
+                    BrandEntity brand = new BrandEntity();
+                    brand.setUserId(userId);
+                    brand.setUsername(username);
+                    brand.setPhoneFull(phoneFull);
+                    brand.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
+                    brand.setVerifiedAt(LocalDateTime.now());
+                    brandService.register(brand);
+                } else {
+                    CreatorEntity creator = new CreatorEntity();
+                    creator.setUserId(userId);
+                    creator.setUsername(username);
+                    creator.setPhoneFull(phoneFull);
+                    creator.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
+                    creator.setVerifiedAt(new java.util.Date());
+                    creatorService.register(creator);
+                }
+            } catch (Exception e) {
+                status.setRollbackOnly();
+                log.warn("手机号[{}]注册异常: {} 已回滚!", phoneFull, e.getMessage());
+                throw new ServiceException(Code.OPERATION_FAILED);
+            }
+        });
+
+        log.info("手机号[{}]注册并登录成功, roleId={}", phoneFull, dto.getRoleId());
+        return issueTokenAndBuildVo(userId);
+    }
+
+    private String findUserIdByPhoneFull(String phoneFull) {
+        CreatorEntity creator = creatorService.getOne(new LambdaQueryWrapper<CreatorEntity>().eq(CreatorEntity::getPhoneFull, phoneFull));
+        if (creator != null) {
+            return creator.getUserId();
+        }
+        BrandEntity brand = brandService.getOne(new LambdaQueryWrapper<BrandEntity>().eq(BrandEntity::getPhoneFull, phoneFull));
+        if (brand != null) {
+            return brand.getUserId();
+        }
+        return null;
+    }
+
+    private UserVo issueTokenAndBuildVo(String userId) {
+        UserEntity user = this.getById(userId);
+        if (user == null) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        String accessToken = JwtUtils.generateToken(userId);
+        String refreshToken = JwtUtils.generateRefreshToken(userId);
+        redisService.setExpMillis(RedisPrefix.PREFIX_WEB_TOKEN + userId, accessToken, JwtUtils.getExpiration(accessToken));
+        redisService.setExpMillis(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + userId, refreshToken, JwtUtils.getExpiration(refreshToken));
+        UserVo vo = new UserVo();
+        vo.setUserId(user.getUserId());
+        vo.setUsername(user.getUsername());
+        vo.setRoleId(user.getRoleId());
+        vo.setAccessToken(accessToken);
+        vo.setRefreshToken(refreshToken);
         return vo;
     }
 
