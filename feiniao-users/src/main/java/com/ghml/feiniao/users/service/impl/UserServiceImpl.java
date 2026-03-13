@@ -139,21 +139,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     // 手机号验证码登录/注册
     @Override
     public UserVo signInByPhone(SignInByPhoneDto dto) {
-        if (dto == null || StringUtils.isBlank(dto.getPhone()) || StringUtils.isBlank(dto.getCaptcha())) {
+        if (dto == null || StringUtils.isBlank(dto.getPhoneNumber()) || StringUtils.isBlank(dto.getCaptcha())) {
             throw new ServiceException(Code.PARAM_ERROR);
         }
-        String phoneFull = PhoneUtils.normalizePhone(dto.getPhone());
-        if (StringUtils.isBlank(phoneFull)) {
+        String phoneNumber = PhoneUtils.normalizePhone(dto.getPhoneNumber());
+        if (StringUtils.isBlank(phoneNumber)) {
             throw new ServiceException(Code.PHONE_NOT_RIGHT);
         }
         // 验证验证码（会删除 Redis 中的验证码）
         CaptchaVerifyDto verifyDto = new CaptchaVerifyDto();
-        verifyDto.setPhone(phoneFull);
+        verifyDto.setPhone(phoneNumber);
         verifyDto.setCaptcha(dto.getCaptcha());
-        captchaService.verify(verifyDto);
+        if (!captchaService.verify(verifyDto)) {
+            throw new ServiceException(Code.VERIFIED_CODE_FAILED);
+        }
 
         // 按手机号查是否已注册（创作者或产品主）
-        String existingUserId = findUserIdByPhoneFull(phoneFull);
+        String existingUserId = findUserIdByPhoneNumber(phoneNumber);
         if (existingUserId != null) {
             return issueTokenAndBuildVo(existingUserId);
         }
@@ -181,7 +183,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                     BrandEntity brand = new BrandEntity();
                     brand.setUserId(userId);
                     brand.setUsername(username);
-                    brand.setPhoneFull(phoneFull);
+                    brand.setPhoneNumber(phoneNumber);
                     brand.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
                     brand.setVerifiedAt(LocalDateTime.now());
                     brandService.register(brand);
@@ -189,28 +191,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                     CreatorEntity creator = new CreatorEntity();
                     creator.setUserId(userId);
                     creator.setUsername(username);
-                    creator.setPhoneFull(phoneFull);
+                    creator.setPhoneNumber(phoneNumber);
                     creator.setPhoneVerified(PhoneStatus.VERIFIED.getCode());
                     creator.setVerifiedAt(new java.util.Date());
                     creatorService.register(creator);
                 }
             } catch (Exception e) {
                 status.setRollbackOnly();
-                log.warn("手机号[{}]注册异常: {} 已回滚!", phoneFull, e.getMessage());
+                log.warn("手机号[{}]注册异常: {} 已回滚!", phoneNumber, e.getMessage());
                 throw new ServiceException(Code.OPERATION_FAILED);
             }
         });
 
-        log.info("手机号[{}]注册并登录成功, roleId={}", phoneFull, dto.getRoleId());
+        log.info("手机号[{}]注册并登录成功, roleId={}", phoneNumber, dto.getRoleId());
         return issueTokenAndBuildVo(userId);
     }
 
-    private String findUserIdByPhoneFull(String phoneFull) {
-        CreatorEntity creator = creatorService.getOne(new LambdaQueryWrapper<CreatorEntity>().eq(CreatorEntity::getPhoneFull, phoneFull));
+    private String findUserIdByPhoneNumber(String phoneNumber) {
+        CreatorEntity creator = creatorService.getOne(new LambdaQueryWrapper<CreatorEntity>().eq(CreatorEntity::getPhoneNumber, phoneNumber));
         if (creator != null) {
             return creator.getUserId();
         }
-        BrandEntity brand = brandService.getOne(new LambdaQueryWrapper<BrandEntity>().eq(BrandEntity::getPhoneFull, phoneFull));
+        BrandEntity brand = brandService.getOne(new LambdaQueryWrapper<BrandEntity>().eq(BrandEntity::getPhoneNumber, phoneNumber));
         if (brand != null) {
             return brand.getUserId();
         }

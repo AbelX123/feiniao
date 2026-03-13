@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class CaptchaVerifyDto {
-    @JsonAlias({"phone", "phoneFull"})
+    @JsonAlias({"phone", "phoneFull", "phoneNumber"})
     private String phone;
 
     @JsonAlias({"captcha", "code", "verifiedCode"})

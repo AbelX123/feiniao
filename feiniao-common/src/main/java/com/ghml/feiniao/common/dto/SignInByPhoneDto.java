@@ -14,7 +14,7 @@ public class SignInByPhoneDto {
 
     @NotBlank(message = "手机号不能为空")
     @JsonAlias({"phone", "phoneFull"})
-    private String phone;
+    private String phoneNumber;
 
     @NotBlank(message = "验证码不能为空")
     @JsonAlias({"captcha", "code", "verifiedCode"})

@@ -8,7 +8,6 @@ import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.dto.CaptchaVerifyDto;
 import com.ghml.feiniao.common.entity.SmsSendLogEntity;
-import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.SmsSendLogMapper;
 import com.ghml.feiniao.common.service.RedisService;
 import com.ghml.feiniao.common.utils.PhoneUtils;
@@ -37,15 +36,15 @@ public class CaptchaServiceImpl implements CaptchaService {
     private final AliyunSmsProps aliyunSmsProps;
 
     @Override
-    public void create(String phoneRaw) {
+    public boolean create(String phoneRaw) {
         String mobile = PhoneUtils.normalizePhone(phoneRaw);
         if (StringUtils.isBlank(mobile)) {
-            throw new ServiceException(Code.PHONE_NOT_RIGHT);
+            return false;
         }
         String dailyCountKey = dailyCountKey(mobile);
         Long dailyCount = redisService.increment(dailyCountKey);
         if (dailyCount == null) {
-            throw new ServiceException(Code.OPERATION_FAILED);
+            return false;
         }
         if (dailyCount == 1L) {
             long ttlMillis = millisUntilEndOfDay();
@@ -53,7 +52,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
         if (dailyCount > DAILY_SEND_LIMIT) {
             saveSmsLog(buildLog(mobile, 0, "LIMIT", Code.VERIFIED_CODE_DAILY_LIMIT.getMsg(), null, null));
-            throw new ServiceException(Code.VERIFIED_CODE_DAILY_LIMIT);
+            return false;
         }
 
         String captcha = String.format("%06d", ThreadLocalRandom.current().nextInt(1_000_000));
@@ -81,50 +80,51 @@ public class CaptchaServiceImpl implements CaptchaService {
                     log.warn("短信降级模式已开启，本次发送按成功处理: phone={}", mobile);
                     log.info("测试验证码(仅调试使用): phone={}, code={}", mobile, captcha);
                     redisService.setExpMillis(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + mobile, captcha, CAPTCHA_EXPIRE_MILLIS);
-                    return;
+                    return true;
                 }
-                throw new ServiceException(Code.OPERATION_FAILED);
+                return false;
             }
 
             String requestId = response.getBody() == null ? null : response.getBody().getRequestId();
             String bizId = response.getBody() == null ? null : response.getBody().getBizId();
             saveSmsLog(buildLog(mobile, 1, respCode, "OK", requestId, bizId));
             redisService.setExpMillis(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + mobile, captcha, CAPTCHA_EXPIRE_MILLIS);
-            return;
-        } catch (ServiceException e) {
-            // 发送失败回滚本次计数
-            redisService.decrement(dailyCountKey);
-            throw e;
+            return true;
         } catch (Exception e) {
             saveSmsLog(buildLog(mobile, 0, "EXCEPTION", e.getMessage(), null, null));
             if (Boolean.TRUE.equals(aliyunSmsProps.getFallbackEnabled())) {
                 log.warn("短信发送异常，启用降级成功: phone={}, reason={}", mobile, e.getMessage());
                 log.info("测试验证码(仅调试使用): phone={}, code={}", mobile, captcha);
                 redisService.setExpMillis(RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + mobile, captcha, CAPTCHA_EXPIRE_MILLIS);
-                return;
+                return true;
             }
             redisService.decrement(dailyCountKey);
             log.error("短信验证码发送异常: phone={}, reason={}", mobile, e.getMessage(), e);
-            throw new ServiceException(Code.OPERATION_FAILED);
+            return false;
         }
     }
 
     @Override
-    public void verify(CaptchaVerifyDto dto) {
+    public boolean verify(CaptchaVerifyDto dto) {
         if (dto == null || StringUtils.isBlank(dto.getPhone()) || StringUtils.isBlank(dto.getCaptcha())) {
-            throw new ServiceException(Code.PARAM_ERROR);
+            return false;
         }
 
-        String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + dto.getPhone().trim();
+        String phone = PhoneUtils.normalizePhone(dto.getPhone());
+        if (StringUtils.isBlank(phone)) {
+            return false;
+        }
+        String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + phone.trim();
         String codeInCache = (String) redisService.get(key);
         if (StringUtils.isBlank(codeInCache)) {
-            throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
+            return false;
         }
         if (!StringUtils.equals(codeInCache, dto.getCaptcha().trim())) {
-            throw new ServiceException(Code.VERIFIED_CODE_FAILED);
+            return false;
         }
 
         redisService.delete(key);
+        return true;
     }
 
     private String dailyCountKey(String mobile) {

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.constants.Bucket;
-import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.dto.BrandDto;
+import com.ghml.feiniao.common.dto.CaptchaVerifyDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.entity.CreatorEntity;
 import com.ghml.feiniao.common.entity.FavoriteEntity;
@@ -46,6 +46,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
     private final FavoriteService favoriteService;
     private final RedisService redisService;
     private final MinIOProps minIOProps;
+    private final CaptchaService captchaService;
 
     // 根据编号查询产品主信息
     @Override
@@ -265,23 +266,21 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, BrandEntity> impl
      */
     private boolean createUpdateEntity(BrandEntity updateEntity, BrandEntity existingBrand, BrandDto dto) {
         boolean needUpdate = false;
-        // 如果存在手机号更新，验证验证码状态
-        if (!StringUtils.isEmpty(updateEntity.getPhoneNumber())) {
-            if (!StringUtils.equals(dto.getPhoneNumber(), existingBrand.getPhoneNumber())) {
-                String key = RedisPrefix.PREFIX_PHONE_VERIFIED_CODE + existingBrand.getUserId();
-                String codeInCache = (String) redisService.get(key);
-                if (StringUtils.isEmpty(codeInCache)) {
-                    throw new ServiceException(Code.VERIFIED_CODE_EXPIRED);
-                }
-                if (!StringUtils.equals(codeInCache, dto.getVerifiedCode())) {
-                    throw new ServiceException(Code.VERIFIED_CODE_FAILED);
-                }
-                // 手机号相关信息
-                updateEntity.setPhoneNumber(dto.getPhoneNumber());
-                updateEntity.setVerifiedAt(LocalDateTime.now());
-                updateEntity.setPhoneVerified(1);
-                needUpdate = true;
+        // 如果存在手机号更新，先验证验证码
+        if (StringUtils.isNotBlank(dto.getPhoneNumber()) && !StringUtils.equals(dto.getPhoneNumber(), existingBrand.getPhoneNumber())) {
+            if (StringUtils.isBlank(dto.getVerifiedCode())) {
+                throw new ServiceException(Code.PARAM_ERROR);
             }
+            CaptchaVerifyDto verifyDto = new CaptchaVerifyDto();
+            verifyDto.setPhone(dto.getPhoneNumber());
+            verifyDto.setCaptcha(dto.getVerifiedCode());
+            if (!captchaService.verify(verifyDto)) {
+                throw new ServiceException(Code.VERIFIED_CODE_FAILED);
+            }
+            updateEntity.setPhoneNumber(dto.getPhoneNumber());
+            updateEntity.setVerifiedAt(LocalDateTime.now());
+            updateEntity.setPhoneVerified(1);
+            needUpdate = true;
         }
         // 其余信息
         if (StringUtils.isNotBlank(dto.getUsername()) && !StringUtils.equals(dto.getUsername(), existingBrand.getUsername())) {

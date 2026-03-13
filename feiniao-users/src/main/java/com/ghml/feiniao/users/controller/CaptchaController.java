@@ -1,5 +1,6 @@
 package com.ghml.feiniao.users.controller;
 
+import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.dto.CaptchaVerifyDto;
 import com.ghml.feiniao.users.service.CaptchaService;
@@ -16,14 +17,12 @@ public class CaptchaController {
     // 创建验证码
     @PostMapping("/create")
     public R<?> create(@RequestBody String phone) {
-        captchaService.create(phone);
-        return R.ok();
+        return captchaService.create(phone) ? R.ok() : R.failed(Code.OPERATION_FAILED);
     }
 
     // 验证验证码
     @PostMapping("/verify")
     public R<?> verify(@RequestBody CaptchaVerifyDto dto) {
-        captchaService.verify(dto);
-        return R.ok();
+        return captchaService.verify(dto) ? R.ok() : R.failed(Code.VERIFIED_CODE_FAILED);
     }
 }
