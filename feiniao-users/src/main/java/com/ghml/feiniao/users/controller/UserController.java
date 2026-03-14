@@ -3,6 +3,7 @@ package com.ghml.feiniao.users.controller;
 import com.ghml.feiniao.common.api.R;
 import com.ghml.feiniao.common.constants.HttpHeaders;
 import com.ghml.feiniao.common.dto.SignInByPhoneDto;
+import com.ghml.feiniao.common.dto.UpdatePasswordDto;
 import com.ghml.feiniao.common.dto.UserDto;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.vo.UserVo;
@@ -74,6 +75,17 @@ public class UserController {
         try {
             userService.signOut();
             return R.ok();
+        } catch (ServiceException e) {
+            return R.failed(e.getCode());
+        }
+    }
+
+    // 修改密码（手机号+验证码校验通过后更新密码，返回用户信息含新 token）
+    @PatchMapping("/password")
+    public R<UserVo> updatePassword(@Valid @RequestBody UpdatePasswordDto dto) {
+        try {
+            UserVo vo = userService.updatePassword(dto);
+            return R.ok(vo);
         } catch (ServiceException e) {
             return R.failed(e.getCode());
         }

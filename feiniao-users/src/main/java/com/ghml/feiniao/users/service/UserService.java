@@ -1,6 +1,7 @@
 package com.ghml.feiniao.users.service;
 
 import com.ghml.feiniao.common.dto.SignInByPhoneDto;
+import com.ghml.feiniao.common.dto.UpdatePasswordDto;
 import com.ghml.feiniao.common.dto.UserDto;
 import com.ghml.feiniao.common.vo.UserVo;
 
@@ -24,4 +25,9 @@ public interface UserService {
     UserVo refreshToken(String refreshToken);
 
     void signOut();
+
+    /**
+     * 通过手机号+验证码修改密码（验证码校验通过后更新对应用户密码，返回用户信息含新 token）
+     */
+    UserVo updatePassword(UpdatePasswordDto dto);
 }

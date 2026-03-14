@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class CaptchaServiceImpl implements CaptchaService {
 
-    private static final int DAILY_SEND_LIMIT = 3;
+    private static final int DAILY_SEND_LIMIT = 100;
     private static final long CAPTCHA_EXPIRE_MILLIS = 5 * 60 * 1000L; // 5分钟
 
     private final RedisService redisService;

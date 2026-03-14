@@ -8,6 +8,7 @@ import com.ghml.feiniao.common.constants.RedisPrefix;
 import com.ghml.feiniao.common.constants.Role;
 import com.ghml.feiniao.common.dto.CaptchaVerifyDto;
 import com.ghml.feiniao.common.dto.SignInByPhoneDto;
+import com.ghml.feiniao.common.dto.UpdatePasswordDto;
 import com.ghml.feiniao.common.dto.UserDto;
 import com.ghml.feiniao.common.entity.BrandEntity;
 import com.ghml.feiniao.common.entity.CreatorEntity;
@@ -271,5 +272,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         redisService.delete(RedisPrefix.PREFIX_WEB_TOKEN + currentUserId);
         redisService.delete(RedisPrefix.PREFIX_WEB_REFRESH_TOKEN + currentUserId);
         log.info("用户[{}]退出登录!", SecurityUtils.getCurrentUsername());
+    }
+
+    // 通过手机号+验证码修改密码
+    @Override
+    public UserVo updatePassword(UpdatePasswordDto dto) {
+        if (dto == null || StringUtils.isBlank(dto.getPhoneNumber()) || StringUtils.isBlank(dto.getCaptcha())
+                || StringUtils.isBlank(dto.getPassword()) || StringUtils.isBlank(dto.getConfirmPassword())) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new ServiceException(Code.PARAM_ERROR);
+        }
+        String phoneNumber = PhoneUtils.normalizePhone(dto.getPhoneNumber());
+        if (StringUtils.isBlank(phoneNumber)) {
+            throw new ServiceException(Code.PHONE_NOT_RIGHT);
+        }
+        CaptchaVerifyDto verifyDto = new CaptchaVerifyDto();
+        verifyDto.setPhone(phoneNumber);
+        verifyDto.setCaptcha(dto.getCaptcha());
+        if (!captchaService.verify(verifyDto)) {
+            throw new ServiceException(Code.VERIFIED_CODE_FAILED);
+        }
+        String userId = findUserIdByPhoneNumber(phoneNumber);
+        if (userId == null) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        UserEntity user = this.getById(userId);
+        if (user == null) {
+            throw new ServiceException(Code.USER_NOT_EXIST);
+        }
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        this.updateById(user);
+        log.info("用户[{}]通过手机号修改密码成功", userId);
+        return issueTokenAndBuildVo(userId);
     }
 }
