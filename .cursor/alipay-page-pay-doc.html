@@ -1,0 +1,119 @@
+<a name="lkYuU"></a>
+# 电脑网站支付产品接入目录
+<a name="jupDc"></a>
+## 产品简介
+电脑网站支付是指商户在电脑网页展示商品或服务，用户在商户页面确认使用支付宝支付时，浏览器自动跳转支付宝电脑网页完成付款的支付产品。该产品在签约完成后，需要技术集成方可使用。<br />**核心特性**：
+
+- 费率：单笔收费 0.6%
+- 结算：实时到账（新签约商家有90日或连续交易30日的结算周期限制）
+- 退款：默认交易发生后12个月内可退款，退款资金原路退还
+- 支付工具：支付宝余额、银行卡(储蓄卡和信用卡)、花呗、花呗分期等
+
+**申请条件**：
+
+- 支持支付宝企业账号、个人账号、个体工商户
+- 网站能正常访问且页面显示完整，需有明确经营内容和完整商品信息
+- 网站必须通过ICP备案，且备案主体需与支付宝账号主体一致
+
+---
+
+<a name="bhjlU"></a>
+## 文档目录与路由表
+<a name="tKZSx"></a>
+### 一、产品介绍
+| 主题 | 文档链接 | 核心内容 |
+| --- | --- | --- |
+| 产品特色 | [产品介绍](https://ideservice.alipay.com/cms/site/0izbjo) | 产品概述、申请条件、费率、结算规则 |
+| 接入准备 | [接入准备](https://ideservice.alipay.com/cms/site/0izbjp) | 商家自研接入、服务商代开发接入流程 |
+| 常见问题 | [常见问题](https://ideservice.alipay.com/cms/site/0izbke) | 支付问题、退款问题解答 |
+
+<a name="l9JPn"></a>
+### 二、接入指南
+<a name="CfGgQ"></a>
+#### 基础功能
+| 主题 | 文档链接 | 核心内容 |
+| --- | --- | --- |
+| 界面规范 | [界面规范](https://ideservice.alipay.com/cms/site/0izbjs) | 支付界面设计规范 |
+| 电脑网站支付快速接入 | [快速接入](https://ideservice.alipay.com/cms/site/0izbjt) | 支付流程、退款流程、关闭交易 |
+| 异步通知说明 | [异步通知](https://ideservice.alipay.com/cms/site/0izbju) | 异步通知参数、验签流程 |
+
+<a name="l1Dhf"></a>
+#### 集成工具
+| 主题 | 文档链接 | 核心内容 |
+| --- | --- | --- |
+| 沙箱调试说明 | [沙箱说明](https://ideservice.alipay.com/cms/site/0izbk2) | 沙箱环境配置、调试注意事项 |
+| SDK & Demo 获取 | [SDK获取](https://ideservice.alipay.com/cms/site/0izbk3) | Java/.NET/PHP版本Demo下载 |
+
+<a name="RDgPY"></a>
+### 三、API接口列表
+| 接口名称 | 接口英文名 | 文档链接 | 用途 |
+| --- | --- | --- | --- |
+| 统一收单下单并支付页面接口 | alipay.trade.page.pay | [接口文档](https://ideservice.alipay.com/cms/site/0izblh) | 发起支付请求 |
+| 统一收单交易查询接口 | alipay.trade.query | [接口文档](https://ideservice.alipay.com/cms/site/0izam7) | 查询订单状态 |
+| 统一收单交易退款接口 | alipay.trade.refund | [接口文档](https://ideservice.alipay.com/cms/site/0izblj) | 发起退款 |
+| 统一收单交易退款查询接口 | alipay.trade.fastpay.refund.query | [接口文档](https://ideservice.alipay.com/cms/site/0izam8) | 查询退款状态 |
+| 收单退款冲退完成通知 | alipay.trade.refund.depositback.completed | [接口文档](https://ideservice.alipay.com/cms/site/0izcua) | 银行卡退款通知 |
+| 统一收单交易关闭接口 | alipay.trade.close | [接口文档](https://ideservice.alipay.com/cms/site/0izcu8) | 关闭未支付订单 |
+| 查询对账单下载地址接口 | alipay.data.dataservice.bill.downloadurl.query | [接口文档](https://ideservice.alipay.com/cms/site/0izblk) | 对账单下载 |
+
+
+---
+
+<a name="RMlK7"></a>
+## 核心接入流程
+> 📖 详见：[电脑网站支付快速接入](https://ideservice.alipay.com/cms/site/0izbjt)
+
+**关键流程说明**：
+
+1. 商家系统调用 alipay.trade.page.pay 向支付宝发起支付请求
+2. 支付宝校验参数后重定向至用户登录页面
+3. 用户确认支付后，支付宝通过 GET 请求 return_url 返回同步结果
+4. 交易成功后，支付宝通过 POST 请求 notify_url 返回异步通知
+5. 若未收到异步通知，可调用 alipay.trade.query 查询交易状态
+
+---
+
+<a name="GBxS5"></a>
+## 开发者核心关注要点
+| 关注点 | 说明 | 文档链接 |
+| --- | --- | --- |
+| 同步返回不可靠 | 支付结果必须以异步通知或查询接口返回为准，不能依赖同步跳转 | [快速接入](https://ideservice.alipay.com/cms/site/0izbjt) |
+| 异步通知验签 | 必须验证通知中的 sign 参数，并核对 app_id、out_trade_no、total_amount | [异步通知](https://ideservice.alipay.com/cms/site/0izbju) |
+| 付款码刷新 | 付款页面生成的付款码每 2 分钟会自动刷新一次 | [快速接入](https://ideservice.alipay.com/cms/site/0izbjt) |
+| 订单号唯一性 | 商家端保证不同次支付 out_trade_no 不可重复 | [快速接入](https://ideservice.alipay.com/cms/site/0izbjt) |
+| 退款规则 | 退款周期12个月，退款时手续费不退回，总退款金额不能超过用户实际支付金额 | [快速接入](https://ideservice.alipay.com/cms/site/0izbjt) |
+
+
+---
+
+<a name="kDJic"></a>
+## SDK配置
+| 配置模式 | 适用场景 | 文档链接 |
+| --- | --- | --- |
+| 公钥模式 | 普通接口调用 | [接入准备](https://ideservice.alipay.com/cms/site/0izbjp) |
+| 公钥证书模式 | 涉及资金支出接口（必选） | [接入准备](https://ideservice.alipay.com/cms/site/0izbjp) |
+
+> 📖 Demo下载：[SDK & Demo 获取](https://ideservice.alipay.com/cms/site/0izbk3)
+
+
+---
+
+<a name="t28Rh"></a>
+## 沙箱环境
+| 配置项 | 值 |
+| --- | --- |
+| 沙箱网关 | [https://openapi-sandbox.dl.alipaydev.com/gateway.do](https://openapi-sandbox.dl.alipaydev.com/gateway.do) |
+| 沙箱说明 | [沙箱调试说明](https://ideservice.alipay.com/cms/site/0izbk2) |
+
+
+---
+
+<a name="tqWDf"></a>
+## 相关链接
+| 名称 | 链接 |
+| --- | --- |
+| 支付宝开放平台 | [https://open.alipay.com/](https://open.alipay.com/) |
+| 商家平台 | [https://b.alipay.com/](https://b.alipay.com/) |
+| 产品开通情况查询 | [https://mrchportalweb.alipay.com/dynlink/productSign/signManage.htm](https://mrchportalweb.alipay.com/dynlink/productSign/signManage.htm) |
+| 电脑网站支付产品开通 | [https://b.alipay.com/page/product-mall/product-detail/I1080300001000041203](https://b.alipay.com/page/product-mall/product-detail/I1080300001000041203) |
+
