@@ -2,6 +2,7 @@ package com.ghml.feiniao.payments.sdk.demo;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.AlipayConfig;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.AlipayTradePagePayRequest;
@@ -114,9 +115,9 @@ public class AlipayTradePagePay {
         // 第三方代调用模式下请设置app_auth_token
         // request.putOtherTextParam("app_auth_token", "<-- 请填写应用授权令牌 -->");
 
-        AlipayTradePagePayResponse response = alipayClient.pageExecute(request, "POST");
+//        AlipayTradePagePayResponse response = alipayClient.pageExecute(request, "POST");
         // 如果需要返回GET请求，请使用
-        // AlipayTradePagePayResponse response = alipayClient.pageExecute(request, "GET");
+         AlipayTradePagePayResponse response = alipayClient.pageExecute(request, "GET");
         String pageRedirectionData = response.getBody();
         System.out.println(pageRedirectionData);
 

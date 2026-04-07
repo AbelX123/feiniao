@@ -48,7 +48,7 @@
         <jjwt.version>0.12.6</jjwt.version>
         <mysql.version>8.0.28</mysql.version>
         <minio.version>8.5.17</minio.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.44</lombok.version>
     </properties>
 
     <!-- ✅ 仅声明子模块可能公用的依赖版本 -->
