@@ -44,4 +44,22 @@ public interface OrderRecordMapper extends BaseMapper<OrderRecordEntity> {
               AND brand_id = #{brandId}
             """)
     int cancelOrder(@Param("orderId") String orderId, @Param("brandId") String brandId);
+
+    @Update("""
+            UPDATE order_records
+            SET order_status = 1,
+                update_time = NOW()
+            WHERE order_id = #{orderId}
+              AND order_status <> 2
+            """)
+    int markOrderPaid(@Param("orderId") String orderId);
+
+    @Update("""
+            UPDATE order_records
+            SET order_status = 2,
+                update_time = NOW()
+            WHERE order_id = #{orderId}
+              AND order_status <> 1
+            """)
+    int markOrderClosed(@Param("orderId") String orderId);
 }

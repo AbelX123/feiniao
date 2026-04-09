@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class AlipayProperties {
 
     private String appId; // 应用id
+    private String sellerId; // 商户PID（seller_id），用于回调校验，可选
     private String merchantPrivateKey; // 应用私钥
     private String alipayPublicKey; // 支付宝公钥
     private String notifyUrl; // 异步通知地址

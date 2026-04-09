@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Data
 public class AlipayPagePayDto {
 
-    private String outTradeNo; // 商户订单号
+    private String orderId; // 商户订单号
     private BigDecimal totalAmount; // 订单金额
     private String subject; // 订单标题
     private String desc; // 订单描述
