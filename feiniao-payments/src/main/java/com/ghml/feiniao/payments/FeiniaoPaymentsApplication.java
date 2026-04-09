@@ -1,10 +1,12 @@
 package com.ghml.feiniao.payments;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @author YUHUAI
@@ -12,11 +14,9 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
  * @date 2025-10-28 21:06
  * @description
  */
-@SpringBootApplication(exclude = {
-        DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class
-})
+@SpringBootApplication
+@MapperScan("com.ghml.feiniao.common.mapper")
+@ComponentScan(basePackages = {"com.ghml.feiniao"})
 public class FeiniaoPaymentsApplication {
 
     public static void main(String[] args) {

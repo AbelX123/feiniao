@@ -48,4 +48,7 @@ public class OrderRecordEntity implements Serializable {
 
     @TableField(value = "create_time")
     private LocalDateTime createTime;
+
+    @TableField(value = "update_time")
+    private LocalDateTime updateTime;
 }

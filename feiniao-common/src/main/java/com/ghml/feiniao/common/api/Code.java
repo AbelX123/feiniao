@@ -41,7 +41,11 @@ public enum Code {
 
     // 文件服务错误
     OSS_ERROR("2000", "文件服务错误"),
-    OSS_NOT_EXIST("2001", "文件资源不存在");
+    OSS_NOT_EXIST("2001", "文件资源不存在"),
+
+    // 订单相关
+    ORDER_ALREADY_PAY("5000", "订单已经支付"),
+    ORDER_ALREADY_CANCEL("5001", "订单已取消");
 
     private final String code;
     private final String msg;

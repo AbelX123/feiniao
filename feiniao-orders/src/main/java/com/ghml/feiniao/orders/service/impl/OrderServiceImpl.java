@@ -46,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
         entity.setOrderAmount(dto.getOrderAmount());
         entity.setOrderStatus(0);
         entity.setCreateTime(LocalDateTime.now());
+        entity.setUpdateTime(LocalDateTime.now());
 
         int inserted = orderRecordMapper.insert(entity);
         if (inserted <= 0) {

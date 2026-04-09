@@ -5,8 +5,13 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePagePayModel;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.ghml.feiniao.common.api.Code;
+import com.ghml.feiniao.common.entity.OrderRecordEntity;
+import com.ghml.feiniao.common.exception.ServiceException;
+import com.ghml.feiniao.common.mapper.OrderRecordMapper;
 import com.ghml.feiniao.payments.config.AlipayProperties;
 import com.ghml.feiniao.payments.dto.AlipayPagePayDto;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +21,25 @@ import java.time.format.DateTimeParseException;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class AlipayPagePayService {
 
     private static final String DEFAULT_PRODUCT_CODE = "FAST_INSTANT_TRADE_PAY";
 
     private final AlipayProperties alipayProperties;
 
-    public AlipayPagePayService(AlipayProperties alipayProperties) {
-        this.alipayProperties = alipayProperties;
-    }
+    private OrderRecordMapper orderRecordMapper;
 
     public String pagePay(AlipayPagePayDto alipayPagePayDto) throws AlipayApiException {
-
+        log.info("收到下单支付请求: {}", alipayPagePayDto.getOutTradeNo());
+        // 查看订单状态
+        OrderRecordEntity record = orderRecordMapper.selectById(alipayPagePayDto.getOutTradeNo());
+        if (record.getOrderStatus() == 1) {
+            throw new ServiceException(Code.ORDER_ALREADY_PAY);
+        }
+        if (record.getOrderStatus() == 2) {
+            throw new ServiceException(Code.ORDER_ALREADY_CANCEL);
+        }
         // 初始化
         AlipayClient alipayClient = new DefaultAlipayClient(
                 alipayProperties.getGatewayUrl(), // 支付宝网关
@@ -89,6 +101,7 @@ public class AlipayPagePayService {
             log.error("alipay api exception", e);
             throw new AlipayApiException("alipay api exception");
         }
+        log.info("请求下单支付结果: {}", form);
 
         return form;
     }
