@@ -4,6 +4,20 @@ FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /build
 
+# 配置阿里云镜像
+RUN mkdir -p /root/.m2 && \
+    echo '<?xml version="1.0" encoding="UTF-8"?> \
+    <settings> \
+        <mirrors> \
+            <mirror> \
+                <id>aliyun</id> \
+                <name>Aliyun Mirror</name> \
+                <url>https://maven.aliyun.com/repository/public</url> \
+                <mirrorOf>central</mirrorOf> \
+            </mirror> \
+        </mirrors> \
+    </settings>' > /root/.m2/settings.xml
+
 # 复制 Maven 配置和源码
 COPY pom.xml .
 COPY feiniao-common feiniao-common
