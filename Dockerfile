@@ -42,5 +42,5 @@ USER appuser
 EXPOSE 8080 8081 8082 8083 8084 8085
 
 # 根据模块使用不同端口（由 docker-compose 覆盖）
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Shanghai", "-jar", "app.jar"]
 
