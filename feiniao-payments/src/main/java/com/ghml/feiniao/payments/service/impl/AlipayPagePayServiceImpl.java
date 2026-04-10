@@ -4,21 +4,24 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePagePayModel;
+import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.ghml.feiniao.common.api.Code;
 import com.ghml.feiniao.common.entity.OrderRecordEntity;
 import com.ghml.feiniao.common.entity.PaymentRecordEntity;
 import com.ghml.feiniao.common.exception.ServiceException;
 import com.ghml.feiniao.common.mapper.OrderRecordMapper;
 import com.ghml.feiniao.common.mapper.PaymentRecordMapper;
+import com.ghml.feiniao.common.utils.SnowflakeIdGenerator;
 import com.ghml.feiniao.payments.config.AlipayProperties;
 import com.ghml.feiniao.payments.dto.AlipayPagePayDto;
 import com.ghml.feiniao.payments.service.AlipayPagePayService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.ghml.feiniao.common.utils.SnowflakeIdGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +29,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,6 +86,20 @@ public class AlipayPagePayServiceImpl implements AlipayPagePayService {
         }
 
         String alipayOutTradeNo = String.valueOf(paymentRecord.getOutTradeNo());
+
+        if (paymentRecord.getTradeNo() != null && !paymentRecord.getTradeNo().isBlank()) {
+            log.info("支付记录已存在支付宝交易号，主动查询订单状态: orderId={}, tradeNo={}",
+                    orderId, paymentRecord.getTradeNo());
+            String queryTradeStatus = queryAlipayTradeStatus(paymentRecord, orderId);
+            if (TRADE_SUCCESS.equals(queryTradeStatus) || TRADE_FINISHED.equals(queryTradeStatus)) {
+                orderRecordMapper.markOrderPaid(orderId);
+                throw new ServiceException(Code.ORDER_ALREADY_PAY);
+            }
+            if (TRADE_CLOSED.equals(queryTradeStatus)) {
+                orderRecordMapper.markOrderClosed(orderId);
+                throw new ServiceException(Code.ORDER_ALREADY_CANCEL);
+            }
+        }
 
         AlipayClient alipayClient = new DefaultAlipayClient(
                 alipayProperties.getGatewayUrl(),
@@ -256,6 +275,55 @@ public class AlipayPagePayServiceImpl implements AlipayPagePayService {
             return LocalDateTime.parse(value, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
             log.warn("时间字段解析失败: {}", value);
+            return null;
+        }
+    }
+
+    private String queryAlipayTradeStatus(PaymentRecordEntity paymentRecord, String orderId) {
+        try {
+            AlipayClient alipayClient = new DefaultAlipayClient(
+                    alipayProperties.getGatewayUrl(),
+                    alipayProperties.getAppId(),
+                    alipayProperties.getMerchantPrivateKey(),
+                    alipayProperties.getFormat(),
+                    alipayProperties.getCharset(),
+                    alipayProperties.getAlipayPublicKey(),
+                    alipayProperties.getSignType()
+            );
+
+            AlipayTradeQueryRequest queryRequest = new AlipayTradeQueryRequest();
+            AlipayTradeQueryModel queryModel = new AlipayTradeQueryModel();
+            queryModel.setTradeNo(paymentRecord.getTradeNo());
+            queryModel.setOutTradeNo(String.valueOf(paymentRecord.getOutTradeNo()));
+            queryRequest.setBizModel(queryModel);
+
+            AlipayTradeQueryResponse response = alipayClient.execute(queryRequest);
+            if (!response.isSuccess()) {
+                log.warn("支付宝交易查询失败: orderId={}, code={}, subCode={}, subMsg={}",
+                        orderId, response.getCode(), response.getSubCode(), response.getSubMsg());
+                return null;
+            }
+
+            String tradeStatus = response.getTradeStatus();
+            log.info("支付宝交易查询成功: orderId={}, tradeStatus={}", orderId, tradeStatus);
+
+            paymentRecord.setTradeStatus(tradeStatus);
+            paymentRecord.setReceiptAmount(parseBigDecimal(response.getReceiptAmount()));
+            paymentRecord.setBuyerPayAmount(parseBigDecimal(response.getBuyerPayAmount()));
+            paymentRecord.setPointAmount(parseBigDecimal(response.getPointAmount()));
+            Date sendPayDate = response.getSendPayDate();
+            if (sendPayDate != null) {
+                paymentRecord.setGmtPayment(
+                        sendPayDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+                );
+            }
+            paymentRecord.setUpdateTime(LocalDateTime.now());
+            paymentRecordMapper.updateById(paymentRecord);
+
+            return tradeStatus;
+        } catch (AlipayApiException e) {
+            log.error("查询支付宝交易状态异常: orderId={}, tradeNo={}",
+                    orderId, paymentRecord.getTradeNo(), e);
             return null;
         }
     }
