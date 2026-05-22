@@ -1,0 +1,157 @@
+# 生产环境：仅应用模块，MySQL/Redis/MinIO 使用外部服务
+# 所有环境变量从 .env 读取，参考 .env.example
+services:
+  feiniao-users:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-users
+    container_name: feiniao-users
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_USERS:-8080}:8080"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-feiniao}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-feiniao}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_USERNAME: ${REDIS_USERNAME:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      ALIYUN_SMS_ENDPOINT: ${ALIYUN_SMS_ENDPOINT:-dysmsapi.aliyuncs.com}
+      ALIYUN_SMS_ACCESS_KEY_ID: ${ALIYUN_SMS_ACCESS_KEY_ID}
+      ALIYUN_SMS_ACCESS_KEY_SECRET: ${ALIYUN_SMS_ACCESS_KEY_SECRET}
+      ALIYUN_SMS_SIGN_NAME: ${ALIYUN_SMS_SIGN_NAME}
+      ALIYUN_SMS_TEMPLATE_CODE: ${ALIYUN_SMS_TEMPLATE_CODE}
+      ALIYUN_SMS_FALLBACK_ENABLED: ${ALIYUN_SMS_FALLBACK_ENABLED:-false}
+    networks:
+      - feiniao-net
+
+  feiniao-dicts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-dicts
+    container_name: feiniao-dicts
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_DICTS:-8081}:8081"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-feiniao}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-feiniao}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_USERNAME: ${REDIS_USERNAME:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - feiniao-net
+
+  feiniao-orders:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-orders
+    container_name: feiniao-orders
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_ORDERS:-8082}:8082"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-feiniao}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-feiniao}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_USERNAME: ${REDIS_USERNAME:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - feiniao-net
+
+  feiniao-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-mcp
+    container_name: feiniao-mcp
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_MCP:-8084}:8084"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      FEINIAO_USERS_BASE_URL: http://feiniao-users:8080
+      FEINIAO_DICTS_BASE_URL: http://feiniao-dicts:8081
+    depends_on:
+      - feiniao-users
+      - feiniao-dicts
+    networks:
+      - feiniao-net
+
+  feiniao-recommendation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-recommendation
+    container_name: feiniao-recommendation
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_RECOMMENDATION:-8083}:8083"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      MCP_SERVER_URL: http://feiniao-mcp:8084
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+    depends_on:
+      - feiniao-mcp
+    networks:
+      - feiniao-net
+
+  feiniao-payments:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: feiniao-payments
+    container_name: feiniao-payments
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT_PAYMENTS:-8085}:8085"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-feiniao}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-feiniao}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      ALIPAY_APP_ID: ${ALIPAY_APP_ID}
+      ALIPAY_MERCHANT_PRIVATE_KEY: ${ALIPAY_MERCHANT_PRIVATE_KEY}
+      ALIPAY_PUBLIC_KEY: ${ALIPAY_PUBLIC_KEY}
+      ALIPAY_RETURN_URL: ${ALIPAY_RETURN_URL}
+      ALIPAY_NOTIFY_URL: ${ALIPAY_NOTIFY_URL}
+    networks:
+      - feiniao-net
+
+networks:
+  feiniao-net:
+    driver: bridge
