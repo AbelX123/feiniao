@@ -41,3 +41,4 @@ build/
 
 ### 部署：环境变量（含密码，不提交）
 .envsrc/main/resources/docker-compose.yml
+.env
