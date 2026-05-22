@@ -1,0 +1,32 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+# MCP 调用 feiniao 内部 API 的配置
+feiniao:
+  mcp:
+    api:
+      users-base-url: ${FEINIAO_USERS_BASE_URL:http://localhost:8080}
+      dicts-base-url: ${FEINIAO_DICTS_BASE_URL:http://localhost:8081}
+      # 调用 users API 时可选传递的 Authorization 头（如 Bearer xxx）
+      # users-auth-header: Bearer your-token
+
+spring:
+  application:
+    name: feiniao-mcp-server
+  ai:
+    mcp:
+      server:
+        name: feiniao-mcp-server # mcp服务名称
+        enabled: true # mcp开启状态
+        stdio: false # stdio模式不开启
+        sse-endpoint: /sse
+        sse-message-endpoint: /mcp/message # 自定义SSE消息终端节点
+        version: 1.0.0 # 服务器版本
+        type: async # 异步模式
+        resource-change-notification: true # 启动资源更改通知
+        prompt-change-notification: true # 提示词更改通知
+        tool-change-notification: true # 工具更改通知
+
+logging:
+  level:
+    com.ghml.feiniao.mcp: DEBUG

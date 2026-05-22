@@ -1,0 +1,6 @@
+# 生产环境配置 - 关键信息通过环境变量覆盖
+feiniao:
+  mcp:
+    api:
+      users-base-url: ${FEINIAO_USERS_BASE_URL}
+      dicts-base-url: ${FEINIAO_DICTS_BASE_URL}

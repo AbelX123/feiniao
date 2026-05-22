@@ -1,0 +1,10 @@
+# 生产环境配置 - 关键信息通过环境变量覆盖
+spring:
+  ai:
+    mcp:
+      client:
+        sse:
+          connections:
+            feiniao-mcp-server:
+              url: ${MCP_SERVER_URL}
+              sse-endpoint: /sse

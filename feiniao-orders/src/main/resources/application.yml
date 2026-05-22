@@ -1,0 +1,24 @@
+server:
+  port: ${SERVER_PORT:8082}
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:feiniao}
+    username: ${MYSQL_USERNAME:feiniao}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:default}
+      password: ${REDIS_PASSWORD}
+  jackson:
+    default-property-inclusion: non_null
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.ghml.feiniao.common.mapper
+  configuration:
+    auto-mapping-behavior: full
+security:
+  public-endpoints:
+    - /api/orders
